@@ -2,22 +2,30 @@
 //【内容】post.jsのまとめ
 //【パーミッション】A
 //【備考】checkBeforeCreateThreadとcheckBeforePostの{}内で、行頭のコメント「//」を、利用する行ごとに解除することで、有効になります。
-//【更新日時】2014/06/08 転載禁止語変換を追加
+//【更新日時】2014/10/18 8chan書き込み機能の追加(write8chanThread) ※画像投稿に失敗する場合がある＆投稿後スレッドの自動更新が上手く働かない
+//            2014/07/24 Java6でmakeParam()が動かない不具合の修正
+//            2014/07/04 ふたばスレ立て機能の追加、4chanにも画像ファイルのドラッグ＆ドロップできるようにした 7/13追記：ふたばスレ立て誤爆防止用に確認メッセージの追加
+//            2014/07/01 ふたば画像投稿が出来ない時がある不具合の修正
+//            2014/06/12 バグ修正
+//            2014/06/08 転載禁止語変換を追加 (http://anti.wkeya.com/etc/tools/tensai.php)
+//            2014/06/03 ふたばの書き込みパネルに画像ファイルをドラッグ＆ドロップできるようにした
 //            2014/05/27 バグ修正及びV2C_x64.exe実行時にも動くように設定項目を追加
 //            2014/04/20 2ch.scのスレ立てに対応。作成に成功すると書き込み欄が消えるのでそれを確認後スレ一覧を手動で更新する必要があります。
 //                       1987行あたりにスレ作成後書き込み欄を閉じる閉じないの設定があります。デフォだと閉じる
 //            2014/02/15 浪人BETAに対応。書き込み後閉じる設定項目を追加
 //【スクリプト】
 // ----- 次の行から -----
+
+// [設定] ---------------------------------------------
+
 function checkBeforeCreateThread(wp){
   var post = true;
   return post
 /* スレ立て時の機能を有効にしたい場合、下の各行頭//を削除してください  */
-//    && uneiitaCautionByBoard(wp) //スレ立て時、特定の板、かつ、スレタイに特定のキーワードが含まれていたら警告する
-//    && replaceh(wp) //自動でURL先頭のhを文字参照(16進数)に置換する。(デフォルトはV2C提示版)
-//    && checkSimilarThread(wp) //スレ立て重複チェック
-//    && roninLogin(wp, false) // PINKちゃんねる浪人BETAで書き込みする
-//    && createThread2chsc(wp) // 2ch.scでスレ立てする
+    && uneiitaCautionByBoard(wp) //スレ立て時、特定の板、かつ、スレタイに特定のキーワードが含まれていたら警告する
+    && replaceh(wp) //自動でURL先頭のhを文字参照(16進数)に置換する。(デフォルトはV2C提示版)
+    && checkSimilarThread(wp) //スレ立て重複チェック
+//    && roninLogin(wp, false) // PINKちゃんねる浪人BETAで書き込みする ←不要かも？
 };
 
 function checkBeforePost(wp){
@@ -25,26 +33,38 @@ function checkBeforePost(wp){
   return post
 /* レス書き込み時の機能を有効にしたい場合、下の各行頭//を削除してください  */
 //    && escapeCharRef(wp) //文字参照をそのままスレッドに表示させる(&を&amp;に置換する、デフォルトはV2C提示版の'スクリプト'と'レス表示スタイル')
-//    && replaceh(wp) //自動でURL先頭のhを文字参照(16進数)に置換する。(デフォルトはV2C提示版)
+    && replaceh(wp) //自動でURL先頭のhを文字参照(16進数)に置換する。(デフォルトはV2C提示版)
 //    && removeh(wp) //自動でURL先頭のh抜きをする。(デフォルトはtwitter以外)
-//    && replaceTab(wp) //書き込み時に【TAB】に自動置換（デフォルトはスレタイが'ImageViewURLReplace','ReplaceStr','URLExec'）
+    && replaceTab(wp) //書き込み時に【TAB】に自動置換（デフォルトはスレタイが'ImageViewURLReplace','ReplaceStr','URLExec'）
 //    && closeWritePanel(wp) //書き込み後自動で閉じる（常に行う場合、メニューの設定で可能です。デフォルトはtwitter以外）
 //    && checkBlankName(wp) //名前欄が空欄 or !ninja or !denki以外で警告（デフォルトはローカル板とtwitter以外）
 //    && reloadBeforePost(wp) //書き込み前に更新して新着があれば書き込まない　※勢いのあるスレではそのまま書き込む（デフォルトはローカル板とtwitter以外）
 //    && checkMoitaKotehan(wp) //モ娘（狼）で「名無し募集中。。。」で書き込むときは警告を出さず他の板だと警告を出す
-//    && uneiitaCautionByRes(wp) //運営板で書き込むと規制されると予測される場所の場合書き込み時に警告をだす
-//    && writeFutabaThread(wp) //ふたばちゃんねるに書き込む
-//    && writeBakusaiThread(wp) //爆サイに書き込む
-//    && write4chanThread(wp) //4chanに書き込む
-//    && exSageThread(wp) // 条件に一致したスレッドをsage指定する
-//    && roninLogin(wp, true) // PINKちゃんねる浪人BETAで書き込みする
-//    && tensai(wp) //投稿内容を自動的に転載禁止語へ変換する（デフォルトでは嫌儲のみ）
+    && uneiitaCautionByRes(wp) //運営板で書き込むと規制されると予測される場所の場合書き込み時に警告をだす
+    && writeFutabaThread(wp) //ふたばちゃんねるに書き込む
+    && writeBakusaiThread(wp) //爆サイに書き込む
+    && write4chanThread(wp) //4chanに書き込む
+    && write8chanThread(wp) //8chanに書き込む
+    && exSageThread(wp) // 条件に一致したスレッドをsage指定する
+//    && roninLogin(wp, true) // PINKちゃんねる浪人BETAで書き込みする ←不要かも？
+//    && tensai(wp) // 本文の普通の言語を転載禁止語に変換 (※書き込み前にwindowを開く ※普通の言語に戻す時はtensai.jsを使用する)
 };
+
+/* [ふたば爆サイ4chanのみ] windowsを使用していてV2C_x64.exeを使用している場合は//を外す */
+//var postjsWin64    = true; 
+
+// [設定ここまで] -------------------------------------
+
+var v2cexe = (typeof postjsWin64 !== 'undefined' && postjsWin64) ? 'V2C_x64.exe' : 'V2C.exe';
 
 function exSageThread(wp)
 {
 	var patterns = [
+	// ---------------------------------------------------------------
+	//  [設定] sage指定したいスレタイ＆板の指定
 		{ word : 'エロゲスレ', board : 'news4vip' }
+	//  { word : 'スレタイ名', board : '板キー'},   // 追加する場合このように１行挿入する
+	// ---------------------------------------------------------------
 	];
 	for (var i = 0; i < patterns.length; i++) {
 		var item = patterns[i];
@@ -140,7 +160,7 @@ function checkSimilarThread(wp) {
 		'ｧ', 'ｱ', 'ｨ', 'ｲ', 'ｩ', 'ｳ', 'ｪ', 'ｴ', 'ｫ', 'ｵ', 'ｶ', 'ｷ', 'ｸ', 'ｹ', 'ｺ', 'ｻ', 'ｼ', 'ｽ', 'ｾ', 'ｿ', 'ﾀ', 'ﾁ', 'ｯ', 'ﾂ', 'ﾃ', 'ﾄ', 'ﾅ', 'ﾆ', 'ﾇ', 'ﾈ', 'ﾉ', 'ﾊ', 'ﾋ', 'ﾌ', 'ﾍ',
 		'ﾎ', 'ﾏ', 'ﾐ', 'ﾑ', 'ﾒ', 'ﾓ', 'ｬ', 'ﾔ', 'ｭ', 'ﾕ', 'ｮ', 'ﾖ', 'ﾗ', 'ﾘ', 'ﾙ', 'ﾚ', 'ﾛ', 'ﾜ', 'ﾜ', 'ｦ', 'ﾝ', '｡', '｢', '｣', '､', '･', 'ｰ', 'ﾞ', 'ﾟ'];
 		var zenKana = 'ガギグゲゴザジズゼゾダヂヅデドバパビピブプベペボポヴァアィイゥウェエォオカキクケコサシスセソタチッツテトナニヌネノハヒフヘホマミムメモャヤュユョヨラリルレロワワヲン。「」、・ー゛゜';
-		var zenHira = 'がぎぐげござじずぜぞだぢづでどばぱびぴぶぷべぺぼぽヴぁあぃいぅうぇえぉおかきくけこさしすせそたちっつてとなにぬねのはひふへほまみむめもゃやゅゆょよらりるれろわわをん。「」、・ー゛゜';
+		var zenHira = 'がぎぐげござじずぜぞだぢづでどばぱびぴぶぷべぺぼぽゔぁあぃいぅうぇえぉおかきくけこさしすせそたちっつてとなにぬねのはひふへほまみむめもゃやゅゆょよらりるれろわわをん。「」、・ー゛゜';
 		//全角カタカナひらがなを半角カタカナに
 		s1 = s1.replace(/[ぁ-んァ-ヴ「」、・ー゛゜]/g, function(s) {
 			var n = zenKana.indexOf(s);
@@ -368,6 +388,57 @@ function replaceh(wp) {
   return post;
 };
 
+function makeParam(a) {
+	var enc = encodeURIComponet, ra = [];
+	for (var i in a)
+		ra.push(enc(i) + '=' + enc(a[i]));
+	return ra.join('&');
+};
+
+function tensai(wp) {
+	var th = wp.thread;
+	var bbs = th.bbs;
+	var bd = th.board;
+	var url = bd.url;
+	
+	if(bbs.is2ch){
+		if(v2c.confirm('転載禁止語に変換しますか?')){
+			var msg=wp.message.text+'';
+			var ar=msg.split(/(>[>0-9\s]+)/);
+			var msg2="";
+			
+			var max=ar.length;
+			for(var i=0;i<max;i++){
+				if(ar[i].length===0)continue;
+				if(ar[i].match(/(>[>0-9\s]+)/)){
+					msg2+=ar[i];
+				}else{
+					//v2c.println('(C)ar['+i+']:'+ar[i]+'('+ar[i].length+')');
+					var url='http://anti.wkeya.com/etc/tools/tensai.php';
+					var data=makeParam({
+							t0: ar[i],
+							enc: "1",
+							b: "1"
+						});
+					var hr=v2c.createHttpRequest(url,data);
+					var file=hr.getContentsAsString();
+					msg2+=file;
+				}
+			}
+			wp.message.text=msg2;
+			return true;
+		}else{
+			if(v2c.confirm('そのまま投稿しますか?')){
+				return true;
+			}else{
+				return false;
+			}
+		}
+	}else{
+		return true;
+	}
+};
+
 function removeh(wp) {
   /* 設定 */
   var all = false; //常に有効にする場合 true
@@ -523,17 +594,22 @@ function checkBlankName(wp) {
 
 
 function writeFutabaThread(wp) {
-	return (new FutabaWriteForm(wp, impl_mouseListener)).show();
+	return (new FutabaWriteForm(wp)).show();
 }
 
 function writeBakusaiThread(wp) {
-	return (new BakusaiWriteForm(wp, impl_mouseListener)).show();
+	return (new BakusaiWriteForm(wp)).show();
 }
 
 function write4chanThread(wp) {
-	return (new B4chanWriteForm(wp, impl_mouseListener)).show();
+	return (new B4chanWriteForm(wp)).show();
 }
 
+function write8chanThread(wp) {
+	return (new B8chanWriteForm(wp)).show();
+}
+
+// プロトタイプ
 function impl_mouseListener()
 {
 	this.mouseClicked = function(e) {};
@@ -571,183 +647,372 @@ function impl_mouseListener()
 	}
 }
 
-function FutabaWriteForm(wp, mouse)
+function impl_dropTargetAdapter(instance, funcname)
 {
-// [設定] ---------------------------------------------
-var win64    = false; // windowsを使用していてV2C_x64.exeを使用している場合はtrueにする
-// [設定ここまで] -------------------------------------
-var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
+	this.dragEnter = function(e) {};
+	this.dragExit  = function(e) {};
+	this.dragOver  = function(e) {};
+	this.dropActionChanged = function(e) {};
+	this.drop = function(e) {
+		try {
+			with(JavaImporter(java.awt.datatransfer, java.awt.dnd)) {
+				var t = e.getTransferable();
+				if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+					e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+					var l = t.getTransferData(DataFlavor.javaFileListFlavor);
+					var it = l.iterator();
+					if (it.hasNext()) {
+						instance[funcname](it.next());
+					}
+				}
+			}
+		} catch (e) {
+			var errstr = e.javaException.toString();
+			if (errstr.indexOf('java.awt.datatransfer.UnsupportedFlavorException') != -1) {
+				v2c.println('[post.js] drop() : ドロップされたデータはサポートしていません。\n');
+			} else if (errstr.indexOf('java.io.IOException') != -1) {
+				v2c.println('[post.js] drop() : ドロップされたデータが読み込めません。\n');
+			}
+			v2c.println('詳細: ' + e);
+		}
+	};
+}
+
+function impl_updateThread(conn, obj, th, exe)
+{
+	var self = this;
+	var result = true;
+	var ins;
+	try {
+		ins = conn.getInputStream();
+		var bReader = new java.io.BufferedReader(new java.io.InputStreamReader(ins));
+		var upFailedRegex = /画像サイズが大きすぎます<br>(\d+)Kバイトまで<br>/;
+		var responseData = null;
+		var resCode = conn.getResponseCode();
+		if (resCode == 200 || resCode == 302) {
+			while ((responseData = bReader.readLine()) != null) {
+				if (String(th.url).indexOf('2chan') >= 0 && upFailedRegex.test(String(responseData))) {
+					v2c.alert('アップロードに失敗しました\n画像サイズが大きすぎます\n' + RegExp.$1 + 'Kバイトまで');
+					return true;
+				}
+				//v2c.println(responseData);
+			}
+			if (self.postThreadCheckBox == undefined || !self.postThreadCheckBox.isSelected()) {
+				var dat = obj.exec(th);
+				th.importDatBytes(dat.getBytes("MS932"));
+				java.lang.Thread.sleep(300);
+				var res = th.getRes(th.localResCount - 1);
+				var rl = v2c.getResLabel('書き込み');
+				if (rl) { res.setResLabel(rl); }
+				var OS = java.lang.System.getProperty("os.name").toLowerCase();
+				var path = v2c.appDir;
+				if (OS.indexOf('win') >= 0 && path) {
+					path += '/' + exe;
+					v2c.exec([path, '-c',th.url + th.localResCount]);
+				}
+			} else {
+				v2c.alert('スレッドの作成に成功しました。\nスレ一覧を更新してください。');
+			}
+		}
+	} catch(e) {
+		if (e.toString().indexOf('Unexpected end of file from server') != -1) {
+			v2c.println('[post.js:' + self.constructor.name + '():impl_updateThread()]リクエスト送信に失敗しました：#レスポンスコード：' + conn.getResponseCode() + 'コンテンツ：');
+			try {
+				var es = conn.getErrorStream();
+				var bReader = new java.io.BufferedReader(new java.io.InputStreamReader(es));
+				var responseData = null;
+				while ((responseData = bReader.readLine()) != null) {
+					v2c.println(responseData);
+				}
+				es.close();
+			} catch(ex) { }
+			result = false;
+		} else {
+			v2c.println('[post.js:' + self.constructor.name + '():impl_updateThread()] Error : ' + e);
+		}
+	} finally {
+		if (ins)
+			ins.close();
+	}
+	return result;
+}
+function impl_putd(boun, name, val) {
+	return '---' + boun + '\r\n' +
+			'Content-Disposition: form-data; name="' + name + '"\r\n' +
+			'\r\n' +
+			val + '\r\n';
+}
+
+function impl_showFrame() {
+		if (!this.initialized) { 
+			return true; //true = 既定の書き込み機能を使う
+		}
+		this.frame.show();
+		this.wp.name.text = '';
+		this.wp.mail.text = '';
+		this.wp.message.text = '';
+		return false; // 既定の書き込み機能をキャンセルする
+}
+
+var HTMLParser = function() {
+};
+
+var get_element = function(in_html, in_index, out_elementInfo)
+{
+	if (Object.prototype.toString.call(out_elementInfo) != '[object Object]') {
+		throw '[Error: get_element()] 引数out_elementInfoは空のObject型でなければいけません。';
+		return -1;
+	}
+	var mem = false;
+	var buf = '';
+	var keyname = '';
+	var etag = false;
+	var el = out_elementInfo;
+	el.name = '';
+	el.attributes = {};
+	var i = in_html.indexOf('<', in_index);
+	if (i == -1)
+		return -1;
+	i++;
+	for (; in_html[i] != '>' && i < in_html.length; i++) {
+		if (in_html[i] == '/') {
+			continue;
+		}
+		if (in_html[i] == ' ') {
+			if ((in_html.length - i) > 2) {
+				break;
+			}
+			continue;
+		}
+		buf += in_html[i];
+	}
+	el.name = buf.toLowerCase();
+	if (in_html[i] == '>') {
+		return i + 1;
+	}
+	buf = '';
+	i++;
+	for (; in_html[i] != '>' && i < in_html.length; i++) {
+		if (in_html[i] == ' ' && !mem) continue;
+		if (in_html[i] == '=') {
+			keyname = buf;
+			while ('\'"'.indexOf(in_html[i]) < 0) { i++; }
+			buf = '';
+			mem = true;
+			continue;
+		}
+		if (mem && '\'"'.indexOf(in_html[i]) >= 0) {
+			el.attributes[keyname] = buf;
+			buf = '';
+			mem = false;
+			continue;
+		}
+		buf += in_html[i];
+	}
+	return i + 1;
+};
+
+var get_innerHtml = function(in_html, in_index, ref_elementInfo)
+{
+	var el = ref_elementInfo;
+	el.innerHtml = '';
+	
+	var sTag = '<' + el.name;
+	var eTag = '</' + el.name + '>';
+	var loopcount = 5000;
+	var traverse = function(gen, idx)
+	{
+		var t1 = -1, t2 = -1;
+		if (--loopcount < 0) {
+			v2c.println('[getEndTag():Error] ループ回数の最大値を超えたので中断します。');
+			return -1;
+		}
+		
+		t1 = in_html.indexOf(sTag, idx);
+		t2 = in_html.indexOf(eTag, idx);
+		
+		if (t1 < t2 && t1 != -1)
+			idx = traverse(++gen, t1 + sTag.length);
+		else if (t2 != -1) {
+			if (--gen > 0)
+				idx = traverse(gen, t2 + eTag.length);
+			else
+				idx = t2;
+		} else {
+			v2c.println('[getEndTag():Error] エンドタグを辿れませんでした');
+			return -1;
+		}
+		return idx;
+	}
+	var idx2 = traverse(1, in_index);
+	if (idx2 > in_index)
+		el.innerHtml = in_html.substring(in_index, idx2);
+	return idx2 + eTag.length;
+};
+
+FutabaWriteForm.prototype.mouselistener = impl_mouseListener;
+FutabaWriteForm.prototype.droptargetadapter = impl_dropTargetAdapter;
+FutabaWriteForm.prototype.updatethread = impl_updateThread;
+FutabaWriteForm.prototype.putd = impl_putd;
+FutabaWriteForm.prototype.show = impl_showFrame;
+function FutabaWriteForm(wp)
+{
 	var SwingGui = JavaImporter(java.awt,
 								java.awt.event,
+								java.awt.dnd,
 								Packages.javax.swing,
 								Packages.javax.swing.event
 								);
-	var _wp = wp;
-	var frame;
+	var self = this;
+	var exe = v2cexe;
+	this.wp = wp;
+	this.frame = null;
+	this.attachmentFilePath = null;
+	this.viewAttachFileLabel = null;
+	this.mimeType = null;
+	this.postThreadCheckBox = null;
 	var nameTextField, delKeyTextField, mailTextField, titleTextField, textArea;
-	var attachmentFilePath = null, mimeType = null;
 	var attachFlag  = false;
 	var titleFlag   = false;
 	var nameFlag    = false;
-	var initialized = false;
+	this.initialized = false;
 	var thUrl, html;
 
 	function replaceFutabaAnchor()
 	{
-		/(>>(\d+)(?:-(\d+))?)/.exec(_wp.message);
+		/(>>(\d+)(?:-(\d+))?)/.exec(self.wp.message);
 		var tmp = '';
 		if (RegExp.$2.length > 0 && RegExp.$3.length > 0) {
 			for (var i = parseInt(RegExp.$2) - 1; i < parseInt(RegExp.$3); i++) {
 				var res = v2c.resPane.selectedThread.getRes(i);
 				tmp += '>' + res.aux + '\r\n';
 			}
-			return String(_wp.message.toString()).replace(RegExp.$1, tmp);
+			return String(self.wp.message.toString()).replace(RegExp.$1, tmp);
 		}
 		if (RegExp.$3.length == 0 && RegExp.$2.length > 0) {
 			var res = v2c.resPane.selectedThread.getRes(RegExp.$2 - 1);
 			var aux = res.aux;
-			return String(_wp.message.toString()).replace(RegExp.$1,  '>' + aux);
+			return String(self.wp.message.toString()).replace(RegExp.$1,  '>' + aux);
 		}
-		return _wp.message;
+		return self.wp.message;
 	}
 	
-	function reply()
-	{
+	function createReplyConnection(boundary) {
 		var postUrl = thUrl.replace(/http:\/\/(.+\.2chan\.net)\/(\w+).*/, 'http://$1/$2/futaba.php?guid=on');
-		var host =  _wp.thread.url.host;
-		var boundary = "ghj39458tu43";
+		var host =  self.wp.thread.url.host;
+		var cookie = 'namec=; uuc=1; posttime=' + (new Date()).getTime();
 		var url = new java.net.URL(postUrl);
 		var conn = url.openConnection();
 		with (conn) {
 			setDoOutput(true);
-			
-			var cookie = 'namec=; uuc=1; posttime=' + (new Date()).getTime();
 			setRequestProperty("Host", host);
 			setRequestProperty("Cookie", cookie);
 			setRequestProperty("Referer", thUrl);
 			setRequestProperty("Content-Type", "multipart/form-data; boundary=-" + boundary);
 			setRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1C28 Safari/419.3");
-			var matches = [];
-			var mode_value = (/<input type=hidden name=mode value="(\w+)">/.test(html)) ? RegExp.$1 : '';
-			var maxfsize_value = (/<input type=hidden name="MAX_FILE_SIZE" value="(\d+)">/.test(html)) ? RegExp.$1 : '';
-			var hash = (/<input type=hidden id="hash" name="hash" value="([^"]*)">/.test(html)) ? RegExp.$1 : '';
-			var isBaseForm = /<input type=hidden id="baseform" name="baseform" value="">/.test(html);
-			var resto_value = (/<input type=hidden name=resto value="(\d+)">/.test(html)) ? RegExp.$1 : '';
-			var dmode = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-			var resolution = dmode.getWidth() + 'x' + dmode.getHeight() + 'x' + dmode.getBitDepth();
-			var caco = (function() {
-				var caco = (/<script type="text\/javascript" src="(\/bin\/cachemt\d*\.php)">/.test(html)) ? RegExp.$1 : '';
-				if (caco) {
-					var hr = v2c.createHttpRequest(new java.net.URL('http://' + host + caco));
-					var tmp = hr.getContentsAsString();
-					caco = (/"([^"]*)"/.test(tmp)) ? RegExp.$1 : '';
-				}
-				return caco;
-			})();
-			function putd(boun, name, val) {
-				return '---' + boun + '\r\n' +
-						'Content-Disposition: form-data; name="' + name + '"\r\n' +
-						'\r\n' +
-						val + '\r\n';
-			}
-			
-			var data = putd(boundary, 'mode', mode_value) +
-					   putd(boundary, 'MAX_FILE_SIZE', maxfsize_value);
-			if (isBaseForm) { data += putd(boundary, 'baseform', ''); }
-
-			data += putd(boundary, 'pthb', caco) +
-					putd(boundary, 'pthc', caco) +
-					putd(boundary, 'pthd', (new Date).getTime().toString()) +
-					putd(boundary, 'flvr', '11.9.900') +
-					putd(boundary, 'scsz', (function() {
-						if (resolution) {
-							return resolution;
-						} else {
-							return '';
-						}
-					})());
-			if (hash) {
-				data += putd(boundary, 'hash', hash);
-			}
-			data += putd(boundary, 'js', 'on');
-			
-			data += putd(boundary, 'resto', resto_value);
-			if (nameFlag) {
-				data += putd(boundary, 'name', nameTextField.getText());
-			}
-			data += putd(boundary, 'email', mailTextField.getText());
-			if (titleFlag) {
-				data += putd(boundary, 'sub', titleTextField.getText());
-			}
-			data += putd(boundary, 'com', textArea.getText());
-			with (JavaImporter(java.io)) {
-				var dos = new DataOutputStream(getOutputStream());
-				
-				if (attachFlag && attachmentFilePath) {
-					var file = new File(attachmentFilePath);
-					data += '---' + boundary + '\r\n' +
-						'Content-Disposition: form-data; name="upfile"; filename="' + file.getName() + '"\r\n' +
-						'Content-Type: ' + mimeType + '\r\n' +
-						'\r\n';
-					data = new java.lang.String(data);
-					buf = data.getBytes("MS932");
-					dos.write(buf, 0, buf.length);
-					dos.flush();
-					var fin = new BufferedInputStream(new FileInputStream(file));
-					var buff = 0;
-					while ((buff = fin.read()) != -1) {
-						dos.write(buff);
-					}
-					dos.flush();
-					fin.close();
-
-					data = '\r\n';
-				}
-
-				data += putd(boundary, 'pwd', delKeyTextField.getText());
-				data += '---' + boundary + '--\r\n';
-				data = new java.lang.String(data);
-				var buf = data.getBytes("MS932");
-				dos.write(buf, 0, buf.length);
-				dos.flush();
-				dos.close();
-				
-				// 削除キーの一時記憶
-				v2c.putProperty('_FUTABA_WRITE_FORM_DELKEY_', delKeyTextField.getText());
-				try {
-					var ins = getInputStream();
-					var bReader = new BufferedReader(new InputStreamReader(ins));
-
-					var responseData = null;
-					if (getResponseCode() == 200) {
-						while ((responseData = bReader.readLine()) != null) {
-							v2c.println(responseData);
-						}
-						var getdatobj = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
-						var fd = new getdatobj.FUTABAtoDAT();
-						var th = wp.thread;
-						var dat = fd.exec(th);
-						th.importDatBytes(dat.getBytes("MS932"));
-						var res = th.getRes(th.localResCount - 1);
-						var rl = v2c.getResLabel('書き込み');
-						if (rl) { res.setResLabel(rl); }
-						var OS = java.lang.System.getProperty("os.name").toLowerCase();
-						var path = v2c.appDir;
-						if (OS.indexOf('win') >= 0 && path) {
-							path += '/' + v2cexe;
-							v2c.exec([path, '-c',th.url + th.localResCount]);
-						}
-					}
-					ins.close();
-				}
-				catch (e) {
-					v2c.println('[post.js:FutabaWriteForm():reply()] 画像がアップロード出来ませんでした。再度試みて下さい。');
-				}
-			}
-			
 		}
-		conn.disconnect();
+		return conn;
 	}
+	
+	function reply()
+	{
+		var boundary = Math.random().toString(36).substr(2);
+
+		// 削除キーを記憶しておく
+		v2c.putProperty('_FUTABA_WRITE_FORM_DELKEY_', delKeyTextField.getText());
+
+		// POSTデータの作成
+		var matches = [];
+		var mode_value = (/<input type=hidden name=mode value="(\w+)">/.test(html)) ? RegExp.$1 : '';
+		var maxfsize_value = (/<input type=hidden name="MAX_FILE_SIZE" value="(\d+)">/.test(html)) ? RegExp.$1 : '';
+		var hash = (/<input type=hidden id="hash" name="hash" value="([^"]*)">/.test(html)) ? RegExp.$1 : '';
+		var isBaseForm = /<input type=hidden id="baseform" name="baseform" value="">/.test(html);
+		var resto_value = (/<input type=hidden name=resto value="(\d+)">/.test(html)) ? RegExp.$1 : '';
+		var putd = self.putd;
+		
+		var data = [[], [], []];
+		
+		data[0] = putd(boundary, 'mode', mode_value) +
+				   putd(boundary, 'MAX_FILE_SIZE', maxfsize_value);
+		if (isBaseForm) { data[0] += putd(boundary, 'baseform', ''); }
+		if (hash) {
+			data[0] += putd(boundary, 'hash', hash);
+		}
+		data[0] += putd(boundary, 'js', 'off');
+		if (!self.postThreadCheckBox.isSelected()) {
+			data[0] += putd(boundary, 'resto', resto_value);
+		}
+		if (nameFlag) {
+			data[0] += putd(boundary, 'name', nameTextField.getText());
+		}
+		data[0] += putd(boundary, 'email', mailTextField.getText());
+		if (titleFlag) {
+			data[0] += putd(boundary, 'sub', titleTextField.getText());
+		}
+		data[0] += putd(boundary, 'com', textArea.getText());
+
+		if (attachFlag && self.attachmentFilePath) {
+			var file = new java.io.File(self.attachmentFilePath);
+			data[0] += '---' + boundary + '\r\n' +
+				'Content-Disposition: form-data; name="upfile"; filename="' + file.getName() + '"\r\n' +
+				'Content-Type: ' + self.mimeType + '\r\n' +
+				'\r\n';
+			data[1] = v2c.readBytesFromFile(file); 
+
+			data[2] = '\r\n';
+		}
+		data[0] = new java.lang.String(data[0]);
+		data[0] = data[0].getBytes("MS932");
+
+		data[2] += putd(boundary, 'pwd', delKeyTextField.getText());
+		data[2] += '---' + boundary + '--\r\n';
+		data[2] = new java.lang.String(data[2]);
+		data[2] = data[2].getBytes("MS932");
+		var len = data[0].length + data[1].length + data[2].length;
+
+		var js = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
+		var obj = new js.FUTABAtoDAT();
+		var retry = 10;  // 例外：Unexpected end of file from server の場合のみ
+		
+		while (--retry) {
+			var conn = createReplyConnection(boundary);
+			var dos = new java.io.BufferedOutputStream(conn.getOutputStream(), len);
+			// リクエスト送信
+			for (var i = 0; i < data.length; i++) {
+				if (data[i])
+					dos.write(data[i], 0, data[i].length);
+			}
+			dos.flush();
+			dos.close();
+			// レスポンス取得とレスラベルのセット
+			if (self.updatethread.call(self, conn, obj, self.wp.thread, exe)) {
+				conn.disconnect();
+				break;
+			} else {
+				v2c.println('[post.js:FutabaWriteForm():reply()] リトライします。(残り：' + retry + '回)');
+				conn.disconnect();
+			}
+		}
+		if (!retry)
+			v2c.alert('[post.js:FutabaWriteForm():reply()] レスを投稿出来ませんでした。再度試みて下さい。');
+	}
+	
+	this.setAttachment = function(file)
+	{
+		var matches = [];
+		if (matches = /\.(gif|jpe?g|png)$/i.exec(file.getName())) {
+			var name = file.getName();
+			if (name.length() > 50) {
+				name = name.substr(0, 40) + '...' + name.substr(-5, 5);
+			}
+			self.viewAttachFileLabel.setText(name);
+			self.attachmentFilePath = file.getPath();
+			self.mimeType = 'image/' + matches[1].toLowerCase();
+			if (matches[1].toLowerCase() == 'jpg') { self.mimeType = 'image/jpeg'; }
+		} else {
+			v2c.println('[post.js: writeFutabaThread] GIF/JPG/PNG以外は添付できません。');
+		}
+	};
 	
 	function createFormPanel()
 	{
@@ -773,9 +1038,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 					add(nameLabel, gbc_nameLabel);
 					
 					nameTextField = new JTextField();
-					nameTextField.setText(_wp.name);
+					nameTextField.setText(self.wp.name);
 					nameTextField.setColumns(10);
-					nameTextField.addMouseListener(new MouseListener(new mouse()));
+					nameTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 					var gbc_nameTextField = new GridBagConstraints();
 					gbc_nameTextField.fill = GridBagConstraints.HORIZONTAL;
 					gbc_nameTextField.insets = new Insets(0, 0, 5, 5);
@@ -784,6 +1049,17 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 					gbc_nameTextField.gridy = 0;
 					add(nameTextField, gbc_nameTextField);
 				}
+				
+				self.postThreadCheckBox = new JCheckBox("スレッドを立てる");
+				self.postThreadCheckBox.setToolTipText("レス表示蘭に表示されているふたばスレが所属する板に対してスレッドを立てます");
+				self.postThreadCheckBox.setHorizontalAlignment(SwingConstants.TRAILING);
+				var gbc_postThreadCheckBox = new GridBagConstraints();
+				gbc_postThreadCheckBox.fill = GridBagConstraints.HORIZONTAL;
+				gbc_postThreadCheckBox.insets = new Insets(0, 0, 5, 5);
+				gbc_postThreadCheckBox.gridwidth = 2;
+				gbc_postThreadCheckBox.gridx = 3;
+				gbc_postThreadCheckBox.gridy = 0;
+				add(self.postThreadCheckBox, gbc_postThreadCheckBox);
 				
 				var mailLabel = new JLabel("E-Mail");
 				mailLabel.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -795,9 +1071,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(mailLabel, gbc_mailLabel);
 				
 				mailTextField = new JTextField();
-				mailTextField.setText(_wp.mail);
+				mailTextField.setText(self.wp.mail);
 				mailTextField.setColumns(10);
-				mailTextField.addMouseListener(new MouseListener(new mouse()));
+				mailTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_mailTextField = new GridBagConstraints();
 				gbc_mailTextField.gridwidth = 2;
 				gbc_mailTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -817,7 +1093,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 					add(titleLabel, gbc_titleLabel);
 					
 					titleTextField = new JTextField();
-					titleTextField.addMouseListener(new MouseListener(new mouse()));
+					titleTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 					var gbc_titleTextField = new GridBagConstraints();
 					gbc_titleTextField.gridwidth = 2;
 					gbc_titleTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -831,9 +1107,16 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				var replyButton = new JButton("\u8FD4\u4FE1\u3059\u308B");
 				with (replyButton) {
 					addActionListener(function(e) {
+						var serv = thUrl.split('/');
+						serv.splice(4, 2);
+						serv = serv.join('/') + '/';
+						if (self.postThreadCheckBox.isSelected() && 
+						    !v2c.confirm('ふたばに新規スレッドを立てるならOKを押下してください\nスレ立て先 : ' + serv)) {
+							return;
+						}
 						setEnabled(false);
 						reply();
-						frame.dispose();
+						self.frame.dispose();
 					});
 				}
 				var gbc_replyButton = new GridBagConstraints();
@@ -863,7 +1146,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				
 				textArea = new JTextArea();
 				textArea.setText(replaceFutabaAnchor());
-				textArea.addMouseListener(new MouseListener(new mouse()));
+				textArea.addMouseListener(new MouseListener(new self.mouselistener()));
 				scrollPane.setViewportView(textArea);
 
 				if (attachFlag) {
@@ -876,14 +1159,14 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 					gbc_attachmentLabel.gridy = 4;
 					add(attachmentLabel, gbc_attachmentLabel);
 
-					var viewAttachFileLabel = new JLabel("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+					self.viewAttachFileLabel = new JLabel("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
 					var gbc_viewAttachFileLabel = new GridBagConstraints();
 					gbc_viewAttachFileLabel.gridwidth = 3;
 					gbc_viewAttachFileLabel.fill = GridBagConstraints.BOTH;
 					gbc_viewAttachFileLabel.insets = new Insets(0, 0, 5, 5);
 					gbc_viewAttachFileLabel.gridx = 2;
 					gbc_viewAttachFileLabel.gridy = 4;
-					add(viewAttachFileLabel, gbc_viewAttachFileLabel);
+					add(self.viewAttachFileLabel, gbc_viewAttachFileLabel);
 
 					var attachmentButton = new JButton("\u53C2\u7167...");
 					with(attachmentButton) {
@@ -895,25 +1178,12 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 									addChoosableFileFilter(new FileNameExtensionFilter("GIF イメージ", "gif"));
 									addChoosableFileFilter(new FileNameExtensionFilter("PNG イメージ", "png"));
 								}
-								if (showOpenDialog(frame) == APPROVE_OPTION) {
-									var file = getSelectedFile();
-									var matches = [];
-									if (matches = /\.(gif|jpe?g|png)$/i.exec(file.getName())) {
-										var name = file.getName();
-										if (name.length() > 50) {
-											name = name.substr(0, 40) + '...' + name.substr(-5, 5);
-										}
-										viewAttachFileLabel.setText(name);
-										attachmentFilePath = file.getPath();
-										mimeType = 'image/' + matches[1].toLowerCase();
-										if (matches[1].toLowerCase() == 'jpg') { mimeType = 'image/jpeg'; }
-									} else {
-										v2c.println('[post.js: writeFutabaThread] GIF/JPG/PNG以外は添付できません。');
-									}
+								if (showOpenDialog(self.frame) == APPROVE_OPTION) {
+									self.setAttachment(getSelectedFile());
 								} else {
-									viewAttachFileLabel.setText("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
-									attachmentFilePath = '';
-									mimeType = 'application/octet-stream';
+									self.viewAttachFileLabel.setText("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+									self.attachmentFilePath = '';
+									self.mimeType = 'application/octet-stream';
 								}
 							}
 						});
@@ -958,17 +1228,6 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 		}
 	}
 
-	this.show = function() {
-		if (!initialized) { 
-			return true; //true = 既定の書き込み機能を使う
-		}
-		frame.show();
-		_wp.name.text = '';
-		_wp.mail.text = '';
-		_wp.message.text = '';
-		return false; // 既定の書き込み機能をキャンセルする
-	};
-
 	if (wp.thread.url.toString().indexOf('2chan') < 0 || wp.thread.url.toString().indexOf('ascii') >= 0) {
 		return this;
 	}
@@ -985,7 +1244,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 	attachFlag = (html.indexOf('<td><input type=file name=upfile size="') >= 0);
 	
 	with (SwingGui) {
-		with (frame = JFrame('レス送信モード')) {
+		with (self.frame = JFrame('レス送信モード')) {
 			defaultCloseOperation = DISPOSE_ON_CLOSE;
 			setSize(new Dimension(550, 380));
 			setLayout(new BorderLayout());
@@ -994,27 +1253,29 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			add(new createFormPanel());
 		}
 	}
-	
-	initialized = true;
+	new java.awt.dnd.DropTarget(self.frame.getContentPane(), new java.awt.dnd.DropTargetListener(new self.droptargetadapter(this, "setAttachment")));
+
+	this.initialized = true;
 }
 
-function BakusaiWriteForm(wp, mouse)
+BakusaiWriteForm.prototype.mouselistener = impl_mouseListener;
+BakusaiWriteForm.prototype.updatethread = impl_updateThread;
+BakusaiWriteForm.prototype.putd = impl_putd;
+BakusaiWriteForm.prototype.show = impl_showFrame;
+function BakusaiWriteForm(wp)
 {
-// [設定] ---------------------------------------------
-var win64    = false; // windowsを使用していてV2C_x64.exeを使用している場合はtrueにする
-// [設定ここまで] -------------------------------------
-var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
-
+	var self = this;
+	var exe = v2cexe;
 	var SwingGui = JavaImporter(java.awt,
 								java.awt.event,
 								Packages.javax.swing,
 								Packages.javax.swing.event
 								);
-	var _wp = wp;
-	var frame;
+	this.wp = wp;
+	this.frame;
 	var nameTextField, delKeyTextField, mailTextField, tripTextField, textArea;
 	var thUrl, acode, ctgid, bid, tid, html, title;
-	var initialized = false;
+	this.initialized = false;
 
 	function impl_clickableListener()
 	{
@@ -1071,21 +1332,10 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 		}
 	}
 
-	this.show = function() {
-		if (!initialized) { 
-			return true; //true = 既定の書き込み機能を使う
-		}
-		frame.show();
-		_wp.name.text = '';
-		_wp.mail.text = '';
-		_wp.message.text = '';
-		return false; // 既定の書き込み機能をキャンセルする
-	};
-
 	function reply()
 	{
 		var postUrl = 'http://bakusai.com/thr_rp1/';
-		var boundary = "ghj39458tu43";
+		var boundary = Math.random().toString(36).substr(2);
 		var url = new java.net.URL(postUrl);
 		var conn = url.openConnection();
 		with (conn) {
@@ -1099,14 +1349,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			var matches = [];
 			var prof_flg = (/<input type="hidden" name="prof_flg"\s+value="([^"]+)"/.test(html)) ? RegExp.$1 : '';
 
-			function putd(boun, name, val) {
-				return '---' + boun + '\r\n' +
-						'Content-Disposition: form-data; name="' + name + '"\r\n' +
-						'\r\n' +
-						val + '\r\n';
-			}
 			with (JavaImporter(java.io)) {
 				var dos = new DataOutputStream(getOutputStream());
+				var putd = self.putd;
 				var data = putd(boundary, 'bid', bid) +
 						   putd(boundary, 'tid', tid) +
 						   putd(boundary, 'ctgid', ctgid) +
@@ -1127,32 +1372,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 		
 				// 削除キーの一時記憶
 				v2c.putProperty('_BAKUSAI_WRITE_FORM_DELKEY_', delKeyTextField.getText());
-				
-				var ins = getInputStream();
-				var bReader = new BufferedReader(new InputStreamReader(ins));
-
-				var responseData = null;
-				if (200 == getResponseCode() || 302 == getResponseCode()) {
-					while ((responseData = bReader.readLine()) != null) {
-						v2c.println(responseData);
-					}
-					java.lang.Thread.sleep(1000);
-					var getdatobj = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
-					var fd = new getdatobj.BAKUSAItoDAT();
-					var th = wp.thread;
-					var dat = fd.exec(th);
-					th.importDatBytes(dat.getBytes("MS932"));
-					var res = th.getRes(th.localResCount - 1);
-					var rl = v2c.getResLabel('書き込み');
-					if (rl) { res.setResLabel(rl); }
-					var OS = java.lang.System.getProperty("os.name").toLowerCase();
-					var path = v2c.appDir;
-					if (OS.indexOf('win') >= 0 && path) {
-						path += '/' + v2cexe;
-						v2c.exec([path, '-c',th.url + th.localResCount]);
-					}
-				}
-				ins.close();
+				var js = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
+				var obj = new js.BAKUSAItoDAT();
+				self.updatethread.call(self, conn, obj, self.wp.thread, exe);
 			}
 		}
 		conn.disconnect();
@@ -1180,9 +1402,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(nameLabel, gbc_nameLabel);
 				
 				nameTextField = new JTextField();
-				nameTextField.setText(_wp.name);
+				nameTextField.setText(self.wp.name);
 				nameTextField.setColumns(10);
-				nameTextField.addMouseListener(new MouseListener(new mouse()));
+				nameTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_nameTextField = new GridBagConstraints();
 				gbc_nameTextField.fill = GridBagConstraints.HORIZONTAL;
 				gbc_nameTextField.insets = new Insets(0, 0, 5, 5);
@@ -1209,9 +1431,9 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(mailLabel, gbc_mailLabel);
 				
 				mailTextField = new JTextField();
-				mailTextField.setText(_wp.mail);
+				mailTextField.setText(self.wp.mail);
 				mailTextField.setColumns(10);
-				mailTextField.addMouseListener(new MouseListener(new mouse()));
+				mailTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_mailTextField = new GridBagConstraints();
 				gbc_mailTextField.gridwidth = 2;
 				gbc_mailTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -1230,7 +1452,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(tripLabel, gbc_tripLabel);
 				
 				tripTextField = new JTextField();
-				tripTextField.addMouseListener(new MouseListener(new mouse()));
+				tripTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_tripTextField = new GridBagConstraints();
 				gbc_tripTextField.gridwidth = 2;
 				gbc_tripTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -1253,7 +1475,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 					addActionListener(function(e) {
 						setEnabled(false);
 						reply();
-						frame.dispose();
+						self.frame.dispose();
 					});
 				}
 				var gbc_replyButton = new GridBagConstraints();
@@ -1282,7 +1504,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(scrollPane, gbc_scrollPane);
 				
 				textArea = new JTextArea();
-				textArea.setText(_wp.message);
+				textArea.setText(self.wp.message);
 				textArea.getDocument().addDocumentListener(new DocumentListener() {
 					changedUpdate: function(e) {},
 					insertUpdate: function(e) { 
@@ -1296,7 +1518,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 						bodyKeyDescriptionLabel.setText("<html>(全角750文字まで:残り<font color=red><b>全角" + len + "文字</b></font>)<br>掲示板あらし行為、URLの記載は一回で書込み禁止措置と致します。</html>");
 					}
 				});
-				textArea.addMouseListener(new MouseListener(new mouse()));
+				textArea.addMouseListener(new MouseListener(new self.mouselistener()));
 				scrollPane.setViewportView(textArea);
 
 				var bodyKeyDescriptionLabel = new JLabel("<html>(全角750文字まで:残り<font color=red><b>全角750文字</b></font>)<br>掲示板あらし行為、URLの記載は一回で書込み禁止措置と致します。</html>");
@@ -1352,11 +1574,11 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			return p;
 		}
 	}
-	if (wp.thread.url.toString().indexOf('bakusai') < 0) {
+	if (this.wp.thread.url.toString().indexOf('bakusai') < 0) {
 		return this;
 	}
 
-	thUrl = String(wp.thread.url.toString()).replace(/^http:\/\/bakusai\.com\/test\/read.cgi\/a(\d+)c(\d+)b(\d+)\/(\d+)\/.*/, function(a, g1, g2, g3, g4) {
+	thUrl = String(this.wp.thread.url.toString()).replace(/^http:\/\/bakusai\.com\/test\/read.cgi\/a(\d+)c(\d+)b(\d+)\/(\d+)\/.*/, function(a, g1, g2, g3, g4) {
 		var add = 1000000000;
 		acode = g1;
 		ctgid = g2;
@@ -1370,7 +1592,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 	title = (/<title>([\S\s]+?) - /.test(html)) ? RegExp.$1 : '';
 	
 	with (SwingGui) {
-		with (frame = JFrame('『' + title + '』へのレス投稿')) {
+		with (this.frame = JFrame('『' + title + '』へのレス投稿')) {
 			defaultCloseOperation = DISPOSE_ON_CLOSE;
 			setSize(new Dimension(650, 420));
 			setLayout(new BorderLayout());
@@ -1379,28 +1601,32 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			add(new createFormPanel());
 		}
 	}
-	initialized = true;
+	this.initialized = true;
 }
 
-function B4chanWriteForm(wp, mouse)
+B4chanWriteForm.prototype.mouselistener = impl_mouseListener;
+B4chanWriteForm.prototype.updatethread = impl_updateThread;
+B4chanWriteForm.prototype.putd = impl_putd;
+B4chanWriteForm.prototype.show = impl_showFrame;
+B4chanWriteForm.prototype.droptargetadapter = impl_dropTargetAdapter;
+function B4chanWriteForm(wp)
 {
-// [設定] ---------------------------------------------
-var win64    = false; // windowsを使用していてV2C_x64.exeを使用している場合はtrueにする
-// [設定ここまで] -------------------------------------
-var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
-
+	var self = this;
+	var exe = v2cexe;
 	var SwingGui = JavaImporter(java.awt,
 								java.awt.event,
 								Packages.javax.swing,
 								Packages.javax.swing.event,
 								javax.swing.border
 								);
-	var _wp = wp;
-	var frame;
+	this.wp = wp;
+	this.frame;
 	var nameTextField, delKeyTextField, mailTextField, titleTextField, capreqKeyTextField, textArea;
-	var attachmentFilePath = null, mimeType = null;
+	this.attachmentFilePath = null;
+	this.mimeType = null;
+	this.viewAttachFileLabel;
 	var attachFlag  = false;
-	var initialized = false;
+	this.initialized = false;
 	var replyButton = null, capLabel = null;
 	var capUrl = null, capCField = null;
 	var thUrl, host, server, thkey, html, cookie;
@@ -1451,21 +1677,21 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 	
 	function replace4chanAnchor()
 	{
-		/(>>(\d+)(?:-(\d+))?)/.exec(_wp.message);
+		/(>>(\d+)(?:-(\d+))?)/.exec(self.wp.message);
 		var tmp = '';
 		if (RegExp.$2.length > 0 && RegExp.$3.length > 0) {
 			for (var i = parseInt(RegExp.$2) - 1; i < parseInt(RegExp.$3); i++) {
 				var res = v2c.resPane.selectedThread.getRes(i);
 				tmp += '>>' + res.aux.substring(3); + '\r\n';
 			}
-			return String(_wp.message.toString()).replace(RegExp.$1, tmp);
+			return String(self.wp.message.toString()).replace(RegExp.$1, tmp);
 		}
 		if (RegExp.$3.length == 0 && RegExp.$2.length > 0) {
 			var res = v2c.resPane.selectedThread.getRes(RegExp.$2 - 1);
 			var aux = res.aux.substring(3);
-			return String(_wp.message.toString()).replace(RegExp.$1,  '>>' + aux);
+			return String(self.wp.message.toString()).replace(RegExp.$1,  '>>' + aux);
 		}
-		return _wp.message;
+		return self.wp.message;
 	}
 	
 	function reply()
@@ -1476,8 +1702,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			return false;
 		}
 		var postUrl = 'https://sys.4chan.org/' + server + '/post';
-		var boundary = "ghj39458tu43";
-		v2c.println(postUrl);
+		var boundary = Math.random().toString(36).substr(2);
 		var url = new java.net.URL(postUrl);
 		var conn = url.openConnection();
 		
@@ -1494,13 +1719,8 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			var maxfsize_value = (/<input type="hidden" name="MAX_FILE_SIZE" value="(\d+)">/.test(html)) ? RegExp.$1 : '';
 			var resto_value = (/<input type="hidden" name="resto" value="(\d+)">/.test(html)) ? RegExp.$1 : '';
 
-			function putd(boun, name, val) {
-				return '---' + boun + '\r\n' +
-						'Content-Disposition: form-data; name="' + name + '"\r\n' +
-						'\r\n' +
-						val + '\r\n';
-			}
-
+			var putd = self.putd;
+			
 			var data = putd(boundary, 'MAX_FILE_SIZE', maxfsize_value) +
 					   putd(boundary, 'mode', mode_value) +
 					   putd(boundary, 'resto', resto_value) +
@@ -1517,11 +1737,11 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 
 			with (JavaImporter(java.io)) {
 				var dos = new DataOutputStream(getOutputStream());
-				if (attachmentFilePath) {
-					var file = new File(attachmentFilePath);
+				if (self.attachmentFilePath) {
+					var file = new File(self.attachmentFilePath);
 					data += '---' + boundary + '\r\n' +
 						'Content-Disposition: form-data; name="upfile"; filename="' + file.getName() + '"\r\n' +
-						'Content-Type: ' + mimeType + '\r\n' +
+						'Content-Type: ' + self.mimeType + '\r\n' +
 						'\r\n';
 					data = new java.lang.String(data);
 					buf = data.getBytes("UTF-8");
@@ -1549,40 +1769,35 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				
 				// 削除キーの一時記憶
 				v2c.putProperty('_4CHAN_WRITE_FORM_DELKEY_', delKeyTextField.getText());
-				
-				var ins = getInputStream();
-				var bReader = new BufferedReader(new InputStreamReader(ins));
+				var js = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
+				var obj = new js.B4CHANtoDAT();
+				self.updatethread.call(self, conn, obj, self.wp.thread, exe);
 
-				var responseData = null;
-				if (getResponseCode() == 200) {
-					while ((responseData = bReader.readLine()) != null) {
-						v2c.println(responseData);
-					}
-					var getdatobj = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
-					var fd = new getdatobj.B4CHANtoDAT();
-					var th = wp.thread;
-					var dat = fd.exec(th);
-					th.importDatBytes(dat.getBytes("MS932"));
-					
-					var res = th.getRes(th.localResCount - 1);
-					var rl = v2c.getResLabel('書き込み');
-					if (rl) { res.setResLabel(rl); }
-					var OS = java.lang.System.getProperty("os.name").toLowerCase();
-					var path = v2c.appDir;
-					if (OS.indexOf('win') >= 0 && path) {
-						path += '/' + v2cexe;
-						v2c.exec([path, '-c',th.url + th.localResCount]);
-					}
-				}
-				ins.close();
-				
 			}
 			
 		}
 		conn.disconnect();
-		frame.dispose();
+		self.frame.dispose();
 		return true;
 	}
+	
+	this.setAttachment = function(file)
+	{
+		var matches = [];
+		if (matches = /\.(gif|jpe?g|png)$/i.exec(file.getName())) {
+			var name = file.getName();
+			if (name.length() > 50) {
+				name = name.substr(0, 40) + '...' + name.substr(-5, 5);
+			}
+			self.viewAttachFileLabel.setText(name);
+			self.attachmentFilePath = file.getPath();
+			self.mimeType = 'image/' + matches[1].toLowerCase();
+			if (matches[1].toLowerCase() == 'jpg') { self.mimeType = 'image/jpeg'; }
+		} else {
+			v2c.println('[post.js: writeFutabaThread] GIF/JPG/PNG以外は添付できません。');
+		}
+	};
+
 	function createFormPanel()
 	{
 		with (SwingGui) {
@@ -1607,7 +1822,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 
 				nameTextField = new JTextField();
 				nameTextField.setColumns(10);
-				nameTextField.addMouseListener(new MouseListener(new mouse()));
+				nameTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_nameTextField = new GridBagConstraints();
 				gbc_nameTextField.fill = GridBagConstraints.HORIZONTAL;
 				gbc_nameTextField.insets = new Insets(0, 0, 5, 5);
@@ -1618,7 +1833,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				if (html.indexOf('data-type="Name"') < 0) {
 					nameTextField.setEnabled(false);
 				} else {
-					nameTextField.setText(_wp.name);
+					nameTextField.setText(self.wp.name);
 				}
 			
 				var mailLabel = new JLabel("E-Mail");
@@ -1632,7 +1847,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				
 				mailTextField = new JTextField();
 				mailTextField.setColumns(10);
-				mailTextField.addMouseListener(new MouseListener(new mouse()));
+				mailTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_mailTextField = new GridBagConstraints();
 				gbc_mailTextField.gridwidth = 2;
 				gbc_mailTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -1643,7 +1858,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				if (html.indexOf('data-type="E-mail"') < 0) {
 					mailTextField.setEnabled(false);
 				} else {
-					mailTextField.setText(_wp.mail);
+					mailTextField.setText(self.wp.mail);
 				}
 				
 				var titleLabel = new JLabel("\u984C\u540D");
@@ -1656,7 +1871,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				add(titleLabel, gbc_titleLabel);
 				
 				titleTextField = new JTextField();
-				titleTextField.addMouseListener(new MouseListener(new mouse()));
+				titleTextField.addMouseListener(new MouseListener(new self.mouselistener()));
 				var gbc_titleTextField = new GridBagConstraints();
 				gbc_titleTextField.gridwidth = 2;
 				gbc_titleTextField.fill = GridBagConstraints.HORIZONTAL;
@@ -1709,7 +1924,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				
 				textArea = new JTextArea();
 				textArea.setText(replace4chanAnchor());
-				textArea.addMouseListener(new MouseListener(new mouse()));
+				textArea.addMouseListener(new MouseListener(new self.mouselistener()));
 				scrollPane.setViewportView(textArea);
 
 				var attachmentLabel = new JLabel("\u6DFB\u4ED8File");
@@ -1721,14 +1936,14 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 				gbc_attachmentLabel.gridy = 4;
 				add(attachmentLabel, gbc_attachmentLabel);
 
-				var viewAttachFileLabel = new JLabel("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+				self.viewAttachFileLabel = new JLabel("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
 				var gbc_viewAttachFileLabel = new GridBagConstraints();
 				gbc_viewAttachFileLabel.gridwidth = 3;
 				gbc_viewAttachFileLabel.fill = GridBagConstraints.BOTH;
 				gbc_viewAttachFileLabel.insets = new Insets(0, 0, 5, 5);
 				gbc_viewAttachFileLabel.gridx = 2;
 				gbc_viewAttachFileLabel.gridy = 4;
-				add(viewAttachFileLabel, gbc_viewAttachFileLabel);
+				add(self.viewAttachFileLabel, gbc_viewAttachFileLabel);
 
 				var attachmentButton = new JButton("\u53C2\u7167...");
 				with(attachmentButton) {
@@ -1741,25 +1956,12 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 								addChoosableFileFilter(new FileNameExtensionFilter("GIF イメージ", "gif"));
 								addChoosableFileFilter(new FileNameExtensionFilter("PNG イメージ", "png"));
 							}
-							if (showOpenDialog(frame) == APPROVE_OPTION) {
-								var file = getSelectedFile();
-								var matches = [];
-								if (matches = /\.(gif|jpe?g|png)$/i.exec(file.getName())) {
-									var name = file.getName();
-									if (name.length() > 50) {
-										name = name.substr(0, 40) + '...' + name.substr(-5, 5);
-									}
-									viewAttachFileLabel.setText(name);
-									attachmentFilePath = file.getPath();
-									mimeType = 'image/' + matches[1].toLowerCase();
-									if (matches[1].toLowerCase() == 'jpg') { mimeType = 'image/jpeg'; }
-								} else {
-									v2c.println('[post.js: writeFutabaThread] GIF/JPG/PNG以外は添付できません。');
-								}
+							if (showOpenDialog(self.frame) == APPROVE_OPTION) {
+								self.setAttachment(getSelectedFile());
 							} else {
-								viewAttachFileLabel.setText("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
-								attachmentFilePath = '';
-								mimeType = 'application/octet-stream';
+								self.viewAttachFileLabel.setText("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+								self.attachmentFilePath = '';
+								self.mimeType = 'application/octet-stream';
 							}
 						}
 					});
@@ -1856,20 +2058,10 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 		}
 	}
 
-	this.show = function() {
-		if (!initialized)
-			return true; //true = 既定の書き込み機能を使う
-		frame.show();
-		_wp.name.text = '';
-		_wp.mail.text = '';
-		_wp.message.text = '';
-		return false; // 既定の書き込み機能をキャンセルする
-	};
-
-	if (wp.thread.url.toString().indexOf('4chan') < 0 || wp.thread.url.toString().indexOf('dis.4chan.org') >= 0) {
+	if (this.wp.thread.url.toString().indexOf('4chan') < 0 || this.wp.thread.url.toString().indexOf('dis.4chan.org') >= 0) {
 		return this;
 	}
-	if (/http:\/\/(.+\.4chan\.org)\/test\/read.cgi\/(\w+)\/(\d+).*/.exec(String(_wp.thread.url.toString()))) {
+	if (/http:\/\/(.+\.4chan\.org)\/test\/read.cgi\/(\w+)\/(\d+).*/.exec(String(this.wp.thread.url.toString()))) {
 		host = RegExp.$1;
 		server = RegExp.$2;
 		thkey = RegExp.$3;
@@ -1887,7 +2079,7 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 	}
 
 	with (SwingGui) {
-		with (frame = JFrame('レス送信モード')) {
+		with (this.frame = JFrame('レス送信モード')) {
 			defaultCloseOperation = DISPOSE_ON_CLOSE;
 			setSize(new Dimension(550, 480));
 			setLayout(new BorderLayout());
@@ -1896,7 +2088,482 @@ var v2cexe = (win64) ? 'V2C_x64.exe' : 'V2C.exe';
 			add(new createFormPanel());
 		}
 	}
-	initialized = true;
+	new java.awt.dnd.DropTarget(self.frame.getContentPane(), new java.awt.dnd.DropTargetListener(new self.droptargetadapter(this, "setAttachment")));
+	this.initialized = true;
+}
+
+
+B8chanWriteForm.prototype.mouselistener = impl_mouseListener;
+B8chanWriteForm.prototype.updatethread = impl_updateThread;
+B8chanWriteForm.prototype.putd = impl_putd;
+B8chanWriteForm.prototype.show = impl_showFrame;
+B8chanWriteForm.prototype.droptargetadapter = impl_dropTargetAdapter;
+B8chanWriteForm.prototype.get_element = get_element;
+B8chanWriteForm.prototype.get_innerHtml = get_innerHtml;
+function B8chanWriteForm(wp)
+{
+	var self = this;
+	var exe = v2cexe;
+	var SwingGui = JavaImporter(java.awt,
+								java.awt.event,
+								Packages.javax.swing,
+								Packages.javax.swing.event,
+								javax.swing.border
+								);
+	this.wp = wp;
+	this.frame;
+	var nameTextField, delKeyTextField, mailTextField, titleTextField, capreqKeyTextField, textArea;
+	this.attachmentFilePath = null;
+	this.mimeType = null;
+	this.viewAttachFileLabel;
+	var attachFlag  = false;
+	this.initialized = false;
+	var replyButton = null, capLabel = null;
+	var capUrl = null, capCField = null;
+	var thUrl, host, server, thkey, html, cookie;
+
+	function cookieGen(c)
+	{
+       return (c.match('(__cfduid=[^;]+?;)')) ? RegExp.$1 : '';
+	}
+	
+	function replace4chanAnchor()
+	{
+		/(>>(\d+)(?:-(\d+))?)/.exec(self.wp.message);
+		var tmp = '';
+		if (RegExp.$2.length > 0 && RegExp.$3.length > 0) {
+			for (var i = parseInt(RegExp.$2) - 1; i < parseInt(RegExp.$3); i++) {
+				var res = v2c.resPane.selectedThread.getRes(i);
+				tmp += '>>' + res.aux.substring(3); + '\r\n';
+			}
+			return String(self.wp.message.toString()).replace(RegExp.$1, tmp);
+		}
+		if (RegExp.$3.length == 0 && RegExp.$2.length > 0) {
+			var res = v2c.resPane.selectedThread.getRes(RegExp.$2 - 1);
+			var aux = res.aux.substring(3);
+			return String(self.wp.message.toString()).replace(RegExp.$1,  '>>' + aux);
+		}
+		return self.wp.message;
+	}
+	/*
+		thread = id
+		board  = board.uri
+		page   = current_page (if current_page)
+		mod    = 1 (if mod)
+		name
+		email
+		subject
+		post (reply = button_reply OR newtopic = button_newtopic)
+		body
+		file
+		file_url (if upload_by_url)
+		embed (if embed)
+		sticky (if sticky)
+		lock (if lock)
+		raw (if rawHtml)
+		password (if password)
+		hash (if antibot.hash)
+		
+	*/
+	function createReplyConnection(boundary, action) {
+		var postUrl = 'http://' + host + action;
+		var url = new java.net.URL(postUrl);
+		var conn = url.openConnection();
+		with (conn) {
+			setDoOutput(true);
+			setRequestProperty("Host", host);
+			setRequestProperty("Cookie", cookie);
+			setRequestProperty("Referer", 'http://' + host + '/' + server + '/res/' + thkey + '.html');
+			setRequestProperty("Content-Type", "multipart/form-data; boundary=-" + boundary);
+			setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:26.0) Gecko/20100101 Firefox/26.0");
+		}
+		return conn;
+	}
+	
+	function make_props()
+	{
+		var props = {
+			method: '',
+			action: '',
+			params: []
+		};
+		var idx;
+		var el = {};
+		idx = html.indexOf('<form ');
+		if (idx < 0) {
+			return null;
+		}
+		idx = self.get_element(html, idx, el);
+		if (idx == -1) {
+			return null;
+		}
+		if (el.attributes.name != 'post') {
+			return null;
+		}
+		props.method = el.attributes.method;
+		props.action = el.attributes.action;
+		while (idx < html.length) {
+			el = {};
+			idx = self.get_element(html, idx, el);
+
+			if (el.name == 'input') {
+				props.params.push({ name : el.attributes.name, value : el.attributes.value});
+			} else if (el.name == 'textarea') {
+				idx = self.get_innerHtml(html, idx, el);
+				props.params.push({ name : el.attributes.name, value : el.innerHtml});
+			} else if (el.name == 'form') {
+				break;
+			}
+		}
+		return props;
+	};
+
+	function reply()
+	{
+		var boundary = Math.random().toString(36).substr(2);
+		
+		// 削除キーの一時記憶
+		v2c.putProperty('_8CHAN_WRITE_FORM_DELKEY_', delKeyTextField.getText());
+		
+		// POSTデータの作成
+		var data = [[], [], []];
+		var putd = self.putd;
+		var forms = make_props();
+		if (!forms) {
+			throw 'フォームデータが取得出来ませんでした。レスを投稿できません。';
+			return null;
+		}
+		var idx = 0;
+		for (var i = 0; i < forms.params.length; i++) {
+			var item = forms.params[i];
+			if (item.name == 'file' && self.attachmentFilePath) {
+				var file = new java.io.File(self.attachmentFilePath);
+				data[idx++] += '---' + boundary + '\r\n' +
+					'Content-Disposition: form-data; name="file"; filename="' + file.getName() + '"\r\n' +
+					'Content-Type: ' + self.mimeType + '\r\n' +
+					'\r\n';
+				data[idx++] = v2c.readBytesFromFile(file); 
+				data[idx] = '\r\n';
+				continue;
+			}
+			switch (item.name) {
+				case 'name' :
+					 item.value = nameTextField.getText();
+					break;
+				case 'email' :
+					item.value = mailTextField.getText();
+					break;
+				case 'subject' :
+					item.value = titleTextField.getText();
+					break;
+				case 'body' :
+					item.value = textArea.getText();
+					break;
+				case 'password' :
+					item.value = delKeyTextField.getText();
+					break;
+				case 'no_country' :
+					continue;
+				case 'spoiler' :
+					continue;
+				default :
+					break;
+			}
+			data[idx] += putd(boundary, item.name, item.value);
+		}
+		data[0] = new java.lang.String(data[0]);
+		data[0] = data[0].getBytes("UTF-8");
+
+		data[2] += '---' + boundary + '--\r\n';
+		data[2] = new java.lang.String(data[2]);
+		data[2] = data[2].getBytes("UTF-8");
+		var len = data[0].length + data[1].length + data[2].length;
+		
+		var js = eval(String(v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/system/getdat.js'))));
+		var obj = new js.VICHANtoDAT(host);
+		var retry = 10;  // 例外：Unexpected end of file from server の場合のみ
+		
+		while (--retry) {
+			var conn = createReplyConnection(boundary, forms.action);
+			var dos = new java.io.BufferedOutputStream(conn.getOutputStream(), len);
+			// リクエスト送信
+			for (var i = 0; i < data.length; i++) {
+				if (data[i])
+					dos.write(data[i], 0, data[i].length);
+			}
+			dos.flush();
+			dos.close();
+			// レスポンス取得とレスラベルのセット
+			if (self.updatethread.call(self, conn, obj, self.wp.thread, exe)) {
+				conn.disconnect();
+				break;
+			} else {
+				v2c.println('[post.js:FutabaWriteForm():reply()] リトライします。(残り：' + retry + '回)');
+				conn.disconnect();
+			}
+		}
+		if (!retry)
+			v2c.alert('[post.js:FutabaWriteForm():reply()] レスを投稿出来ませんでした。再度試みて下さい。');
+		self.frame.dispose();
+		return true;
+	}
+	
+	this.setAttachment = function(file)
+	{
+		var matches = [];
+		if (matches = /\.(gif|jpe?g|png)$/i.exec(file.getName())) {
+			var name = file.getName();
+			if (name.length() > 50) {
+				name = name.substr(0, 40) + '...' + name.substr(-5, 5);
+			}
+			self.viewAttachFileLabel.setText(name);
+			self.attachmentFilePath = file.getPath();
+			self.mimeType = 'image/' + matches[1].toLowerCase();
+			if (matches[1].toLowerCase() == 'jpg') { self.mimeType = 'image/jpeg'; }
+		} else {
+			v2c.println('[post.js: writeFutabaThread] GIF/JPG/PNG以外は添付できません。');
+		}
+	};
+
+	function createFormPanel()
+	{
+		with (SwingGui) {
+			var p = new JPanel();
+			with (p) {
+				var gridBagLayout = new GridBagLayout();
+				
+				gridBagLayout.columnWidths = [119, 83, 83, 83, 112, 83, 0];
+				gridBagLayout.rowHeights = [40, 40, 40, 120, 45, 40, 40, 40, 0];
+				gridBagLayout.columnWeights = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, java.lang.Double.MIN_VALUE];
+				gridBagLayout.rowWeights = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, java.lang.Double.MIN_VALUE];
+				setLayout(gridBagLayout);
+
+				var nameLabel = new JLabel("名前");
+				nameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+				var gbc_nameLabel = new GridBagConstraints();
+				gbc_nameLabel.fill = GridBagConstraints.BOTH;
+				gbc_nameLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_nameLabel.gridx = 0;
+				gbc_nameLabel.gridy = 0;
+				add(nameLabel, gbc_nameLabel);
+
+				nameTextField = new JTextField();
+				nameTextField.setColumns(10);
+				nameTextField.addMouseListener(new MouseListener(new self.mouselistener()));
+				var gbc_nameTextField = new GridBagConstraints();
+				gbc_nameTextField.fill = GridBagConstraints.HORIZONTAL;
+				gbc_nameTextField.insets = new Insets(0, 0, 5, 5);
+				gbc_nameTextField.gridwidth = 2;
+				gbc_nameTextField.gridx = 1;
+				gbc_nameTextField.gridy = 0;
+				add(nameTextField, gbc_nameTextField);
+				if (html.indexOf('type="text" name="name"') < 0) {
+					nameTextField.setEnabled(false);
+				} else {
+					nameTextField.setText(self.wp.name);
+				}
+			
+				var mailLabel = new JLabel("E-Mail");
+				mailLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+				var gbc_mailLabel = new GridBagConstraints();
+				gbc_mailLabel.fill = GridBagConstraints.BOTH;
+				gbc_mailLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_mailLabel.gridx = 0;
+				gbc_mailLabel.gridy = 1;
+				add(mailLabel, gbc_mailLabel);
+				
+				mailTextField = new JTextField();
+				mailTextField.setColumns(10);
+				mailTextField.addMouseListener(new MouseListener(new self.mouselistener()));
+				var gbc_mailTextField = new GridBagConstraints();
+				gbc_mailTextField.gridwidth = 2;
+				gbc_mailTextField.fill = GridBagConstraints.HORIZONTAL;
+				gbc_mailTextField.insets = new Insets(0, 0, 5, 5);
+				gbc_mailTextField.gridx = 1;
+				gbc_mailTextField.gridy = 1;
+				add(mailTextField, gbc_mailTextField);
+				if (html.indexOf('type="text" name="email"') < 0) {
+					mailTextField.setEnabled(false);
+				} else {
+					mailTextField.setText(self.wp.mail);
+				}
+				
+				var titleLabel = new JLabel("\u984C\u540D");
+				var gbc_titleLabel = new GridBagConstraints();
+				gbc_titleLabel.anchor = GridBagConstraints.EAST;
+				gbc_titleLabel.fill = GridBagConstraints.VERTICAL;
+				gbc_titleLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_titleLabel.gridx = 0;
+				gbc_titleLabel.gridy = 2;
+				add(titleLabel, gbc_titleLabel);
+				
+				titleTextField = new JTextField();
+				titleTextField.addMouseListener(new MouseListener(new self.mouselistener()));
+				var gbc_titleTextField = new GridBagConstraints();
+				gbc_titleTextField.gridwidth = 2;
+				gbc_titleTextField.fill = GridBagConstraints.HORIZONTAL;
+				gbc_titleTextField.insets = new Insets(0, 0, 5, 5);
+				gbc_titleTextField.gridx = 1;
+				gbc_titleTextField.gridy = 2;
+				add(titleTextField, gbc_titleTextField);
+				titleTextField.setColumns(10);
+				if (html.indexOf('type="text" name="subject"') < 0) {
+					titleTextField.setEnabled(false);
+				}
+
+				replyButton = new JButton("\u8FD4\u4FE1\u3059\u308B");
+				with (replyButton) {
+					addActionListener(function(e) {
+						setEnabled(false);
+						reply();
+					});
+				}
+				var gbc_replyButton = new GridBagConstraints();
+				gbc_replyButton.fill = GridBagConstraints.BOTH;
+				gbc_replyButton.insets = new Insets(0, 0, 5, 5);
+				gbc_replyButton.gridx = 4;
+				gbc_replyButton.gridy = 2;
+				add(replyButton, gbc_replyButton);
+				
+				var commentLabel = new JLabel("\u30B3\u30E1\u30F3\u30C8");
+				var gbc_commentLabel = new GridBagConstraints();
+				gbc_commentLabel.anchor = GridBagConstraints.EAST;
+				gbc_commentLabel.fill = GridBagConstraints.VERTICAL;
+				gbc_commentLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_commentLabel.gridx = 0;
+				gbc_commentLabel.gridy = 3;
+				add(commentLabel, gbc_commentLabel);
+				
+				var scrollPane = new JScrollPane();
+				var gbc_scrollPane = new GridBagConstraints();
+				gbc_scrollPane.gridwidth = 4;
+				gbc_scrollPane.fill = GridBagConstraints.BOTH;
+				gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
+				gbc_scrollPane.gridx = 1;
+				gbc_scrollPane.gridy = 3;
+				add(scrollPane, gbc_scrollPane);
+				
+				textArea = new JTextArea();
+				textArea.setText(replace4chanAnchor());
+				textArea.addMouseListener(new MouseListener(new self.mouselistener()));
+				scrollPane.setViewportView(textArea);
+
+				var attachmentLabel = new JLabel("\u6DFB\u4ED8File");
+				attachmentLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+				var gbc_attachmentLabel = new GridBagConstraints();
+				gbc_attachmentLabel.fill = GridBagConstraints.BOTH;
+				gbc_attachmentLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_attachmentLabel.gridx = 0;
+				gbc_attachmentLabel.gridy = 4;
+				add(attachmentLabel, gbc_attachmentLabel);
+
+				self.viewAttachFileLabel = new JLabel("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+				var gbc_viewAttachFileLabel = new GridBagConstraints();
+				gbc_viewAttachFileLabel.gridwidth = 3;
+				gbc_viewAttachFileLabel.fill = GridBagConstraints.BOTH;
+				gbc_viewAttachFileLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_viewAttachFileLabel.gridx = 2;
+				gbc_viewAttachFileLabel.gridy = 4;
+				add(self.viewAttachFileLabel, gbc_viewAttachFileLabel);
+
+				var attachmentButton = new JButton("\u53C2\u7167...");
+				with(attachmentButton) {
+					addActionListener(function(e) {
+						var fc = new javax.swing.JFileChooser();
+
+						with (fc) {
+							with (JavaImporter(javax.swing.filechooser)) {
+								addChoosableFileFilter(new FileNameExtensionFilter("JPEG イメージ", "jpg", "jpeg"));
+								addChoosableFileFilter(new FileNameExtensionFilter("GIF イメージ", "gif"));
+								addChoosableFileFilter(new FileNameExtensionFilter("PNG イメージ", "png"));
+							}
+							if (showOpenDialog(self.frame) == APPROVE_OPTION) {
+								self.setAttachment(getSelectedFile());
+							} else {
+								self.viewAttachFileLabel.setText("\u30D5\u30A1\u30A4\u30EB\u304C\u9078\u629E\u3055\u308C\u3066\u3044\u307E\u305B\u3093");
+								self.attachmentFilePath = '';
+								self.mimeType = 'application/octet-stream';
+							}
+						}
+					});
+				}
+				var gbc_attachmentButton = new GridBagConstraints();
+				gbc_attachmentButton.fill = GridBagConstraints.BOTH;
+				gbc_attachmentButton.insets = new Insets(0, 0, 5, 5);
+				gbc_attachmentButton.gridx = 1;
+				gbc_attachmentButton.gridy = 4;
+				add(attachmentButton, gbc_attachmentButton);
+				if (html.indexOf('type="file" name="file"') < 0) {
+					attachmentButton.setEnabled(false);
+				}
+
+				var delKeyLabel = new JLabel("\u524A\u9664\u30AD\u30FC");
+				delKeyLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+				var gbc_delKeyLabel = new GridBagConstraints();
+				gbc_delKeyLabel.fill = GridBagConstraints.BOTH;
+				gbc_delKeyLabel.insets = new Insets(0, 0, 0, 5);
+				gbc_delKeyLabel.gridx = 0;
+				gbc_delKeyLabel.gridy = 7;
+				add(delKeyLabel, gbc_delKeyLabel);
+				
+				delKeyTextField = new JTextField();
+				delKeyTextField.setColumns(8);
+				delKeyTextField.enableInputMethods(false);
+				var gbc_delKeyTextField = new GridBagConstraints();
+				gbc_delKeyTextField.fill = GridBagConstraints.HORIZONTAL;
+				gbc_delKeyTextField.insets = new Insets(0, 0, 0, 5);
+				gbc_delKeyTextField.gridx = 1;
+				gbc_delKeyTextField.gridy = 7;
+				add(delKeyTextField, gbc_delKeyTextField);
+				delKeyTextField.setText(v2c.getProperty('_8CHAN_WRITE_FORM_DELKEY_'));
+				
+				var delKeyDescriptionLabel = new JLabel("(\u524A\u9664\u7528\u3001\u82F1\u6570\u5B57\u3067\uFF18\u5B57\u4EE5\u5185)");
+				var gbc_delKeyDescriptionLabel = new GridBagConstraints();
+				gbc_delKeyDescriptionLabel.fill = GridBagConstraints.BOTH;
+				gbc_delKeyDescriptionLabel.insets = new Insets(0, 0, 0, 5);
+				gbc_delKeyDescriptionLabel.gridx = 2;
+				gbc_delKeyDescriptionLabel.gridy = 7;
+				add(delKeyDescriptionLabel, gbc_delKeyDescriptionLabel);
+			}
+			return p;
+		}
+	}
+
+	if (this.wp.thread.url.toString().indexOf('8chan') < 0) {
+		return this;
+	}
+	if (/http:\/\/(.+\.8chan\.co)\/test\/read.cgi\/(\w+)\/(\d+).*/.exec(String(this.wp.thread.url.toString()))) {
+		host = RegExp.$1;
+		server = RegExp.$2;
+		thkey = parseInt(RegExp.$3);
+		var add = 1000000000;
+		if (thkey > add) {
+			thkey = thkey - add;
+		}
+		thUrl = 'http://' + host + '/' + server + '/res/' + thkey + '.html';
+	}
+
+	{
+		var hr = v2c.createHttpRequest(thUrl);
+		html = String(hr.getContentsAsString());
+		if (html == null) { v2c.println('[post.js : B4chanWriteForm] HTMLの取得失敗。スレッドが寿命で消滅したかもしれません。'); throw '[post.js : B4chanWriteForm] HTMLの取得失敗。スレッドが寿命で消滅したかもしれません。' }
+		var c = hr.getResponseHeader('Set-Cookie');
+		if (c)
+			cookie = cookieGen(c);
+	}
+
+	with (SwingGui) {
+		with (this.frame = JFrame('レス送信モード')) {
+			defaultCloseOperation = DISPOSE_ON_CLOSE;
+			setSize(new Dimension(550, 480));
+			setLayout(new BorderLayout());
+			setResizable(false);
+			setLocationRelativeTo(null);
+			add(new createFormPanel());
+		}
+	}
+	new java.awt.dnd.DropTarget(self.frame.getContentPane(), new java.awt.dnd.DropTargetListener(new self.droptargetadapter(this, "setAttachment")));
+	this.initialized = true;
 }
 
 function roninLogin(wp, isRes)
@@ -2004,124 +2671,12 @@ function roninLogin(wp, isRes)
 	return false;
 }
 
-function createThread2chsc(wp)
-{
-	// [設定]書き込みの後書き込み欄を閉じる場合は true 、閉じない場合は false
-	var setCloseAfterWrite = true;
-
-	if (wp.thread.board.url.host.indexOf('2ch.sc') < 0) {
-		return true;
-	}
-
-	var bbsapi = 'http://' + wp.thread.board.url.host + '/test/bbs.cgi';
-	var html = '';
-	{
-		var data = 'submit=新規スレッド書き込み画面へ&bbs=' + wp.thread.board.key;
-		//data = EscapeSJIS(data);
-		var hr = v2c.createHttpRequest(bbsapi + '?new', data);
-		hr.setRequestProperty('Connection', 'keep-alive');
-		hr.setRequestProperty('Host', wp.thread.board.url.host);
-		hr.setRequestProperty('Referer', wp.thread.board.url);
-		hr.setRequestProperty('User-Agent', 'Monazilla/1.00 (V2C post.js)');
-		hr.setRequestProperty('Accept-Encoding', 'gzip, deflate');
-		//hr.setRequestProperty('Cookie', 'READJS="off"; NAME=""; MAIL=""');
-		html = String(hr.getContentsAsString());
-	}
-	var responseMes = '';
-	
-	if (html) {
-		var subject = wp.title;
-		var submit = '新規スレッド書込';
-		var FROM = wp.name;
-		var mail = wp.mail;
-		var MESSAGE = wp.message;
-		var bbs = wp.thread.board.key;
-		var time = (/<input type=hidden name=time value="([^"]+?)">/.test(html)) ? RegExp.$1 : '';
-		var check = (/<input type=hidden name=check value="([^"]+?)">/.test(html)) ? RegExp.$1 : '';
-		var pass = (/<input type=hidden name=pass value="([^"]+?)">/.test(html)) ? RegExp.$1 : '';
-		var data = 'subject=' + subject + '&submit=新規スレッド書込&FROM=' + FROM + '&mail=' + mail + '&MESSAGE=' + MESSAGE + '&bbs=' + bbs + '&time=' + time + '&check=' + check + '&pass=' + pass;
-		//data = EscapeSJIS(data);
-		var hr = v2c.createHttpRequest(bbsapi, data);
-		hr.setRequestProperty('Connection', 'keep-alive');
-		hr.setRequestProperty('Host', wp.thread.board.url.host);
-		hr.setRequestProperty('Referer', wp.thread.board.url);
-		hr.setRequestProperty('User-Agent', 'Monazilla/1.00 (V2C post.js)');
-		hr.setRequestProperty('Accept-Encoding', 'gzip, deflate');
-		//hr.setRequestProperty('Cookie', 'READJS="off"; NAME=""; MAIL=""');
-		
-		responseMes = String(hr.getContentsAsString());
-		
-		if (responseMes.indexOf('書きこみが終わりました。') >= 0) {
-			wp.name.text = '';
-			wp.mail.text = '';
-			wp.message.text = '';
-			wp.title.text = '';
-
-			if (setCloseAfterWrite) {
-				wp.close();
-			}
-			v2c.println('[post.js:createThread2chsc()] 成功 : スレッドを作成しました。スレ一覧を手動で更新して下さい。\r\n' + responseMes);
-			return false;
-		}
-	}
-	
-	v2c.println('[post.js:createThread2chsc()] Error : スレ立て出来ませんでした。\r\n' + responseMes);
-}
-
-(function() {
-	var macobj = {
-		mouseObj : impl_mouseListener,
-		bakusaiObj : BakusaiWriteForm,
-		futabaObj : FutabaWriteForm,
-		b4chanObj : B4chanWriteForm
+//末尾に置く
+(function() { 
+	return {
+		'FutabaWriteForm' : FutabaWriteForm,
+		'BakusaiWriteForm' : BakusaiWriteForm,
+		'B4chanWriteForm' : B4chanWriteForm,
+		'B8chanWriteForm' : B8chanWriteForm
 	};
-	return macobj;
 })();
-
-
-function makeParam(a) 
-  [(enc=encodeURIComponent)(i)+"="+enc(a[i]) for (i in a)].join('&')
-
-function tensai(wp) {
-	var th = wp.thread;
-	var bbs = th.bbs;
-	var bd = th.board;
-	var url = bd.url;
-	
-	if(bbs.is2ch && th.board.key.equals('poverty')){
-		if(v2c.confirm('転載禁止語に変換しますか?')){
-			var msg=wp.message.text+'';
-			var ar=msg.split(/(>[>0-9\s]+)/);
-			var msg2="";
-			
-			var max=ar.length;
-			for(var i=0;i<max;i++){
-				if(ar[i].length===0)continue;
-				if(ar[i].match(/(>[>0-9\s]+)/)){
-					msg2+=ar[i];
-				}else{
-					//v2c.println('(C)ar['+i+']:'+ar[i]+'('+ar[i].length+')');
-					var url='http://anti.wkeya.com/etc/tools/tensai.php';
-					var data=makeParam({
-							t0: ar[i],
-							enc: "1",
-							b: "1"
-						});
-					var hr=v2c.createHttpRequest(url,data);
-					var file=hr.getContentsAsString();
-					msg2+=file;
-				}
-			}
-			wp.message.text=msg2;
-			return true;
-		}else{
-			if(v2c.confirm('そのまま投稿しますか?')){
-				return true;
-			}else{
-				return false;
-			}
-		}
-	}else{
-		return true;
-	}
-};

@@ -1,7 +1,10 @@
 ﻿//【登録場所】 "V2C\script\system\rescheck.js"
 //【内容】rescheck.jsのまとめ
 //【パーミッション】SF
-//【更新日時】2014/06/07 NGBEID2.0に対応したBe非表示機能の追加(パーミッションは「SF」のまま) 6/8追記：バグ修正
+//【更新日時】2014/10/24 特定の機能の組合せの場合スクリプトが作動しない不具合の修正(書換えを行う機能は全てjs stringで代入)
+//            2014/10/23 sageteyonの追加
+//            2014/06/13 NGBEID2.0 : BEの仕様変更に対応(bbspinkの追加) 07/03追記：バグ修正
+//            2014/06/07 NGBEID2.0に対応したBe非表示機能の追加(パーミッションは「SF」のまま) 6/8追記：バグ修正
 //            2014/05/19 重い処理のfutalogを消して軽いfchanlogを追加しました。
 //            2014/04/28 ng_poverty_imgresを追加した。それに伴いパーミッションが「SF」に変更になります。
 //            2014/03/20 obj.futalogでいままでは推測の画像URLでしたがfutalogスレを開いて厳密に画像URLを取得するようにした
@@ -22,13 +25,14 @@ function beginCheck( th, cx ) {
 //	ck.ZentoHan = true; //全角英数を半角英数に
 //	ck.YashitoKata = true; //香具師を方に
 //	ck.kyouseiNanasi = true; //!ninja、!denki、!nanja、!kab、!omikuji、!damaのみを名無し扱いにする。
-//	ck.kyouseiNanasi2 = true; ck.anonymousName = bd.anonymousName; // 地域表示が含まれるデフォルトな名前、投稿毎にランダムな文字列に変わるデフォルトな名前を名無し扱いする。
-//	ck.kyouseiNanasiNewsRandom = th; //「リストからランダム(地域)@転載禁止」の投稿毎に変わる名前を名無し扱いにする。(リストURL http://ken.2ch.net/nanashi999.txt)
+//  ck.kyouseiNanasi2 = true; ck.anonymousName = bd.anonymousName; // 地域表示が含まれるデフォルトな名前、投稿毎にランダムな文字列に変わるデフォルトな名前を名無し扱いする。
+//  ck.kyouseiNanasiNewsRandom = th; //「リストからランダム(地域)@転載禁止」の投稿毎に変わる名前を名無し扱いにする。(リストURL http://ken.2ch.net/nanashi999.txt)
 //	ck.yakitori = true; //名前欄の焼き鳥" [―{}@{}@{}-] "を消す。
 //	ck.no_anchor_over_self = true; //自レス以上のレス番アンカーはリンクしない。
 //	ck.breakWWWLink =true;//"www."から始まるURLはリンク化しない。
 //	ck.fchanlog = th;	//ふたば画像URL直下にふたば画像保管サイト(2chanlog)のURLを付加する
 //	ck.gif2short = true;	//gifの場合、スレ読み込み時に自動ダウンロードさせないようにGoogle短縮URLに置換する
+	ck.sageteyon = 1;	//名前欄の転載禁止文字列を[1:削除する、2:短縮表記に置換する]
 	
 //	cx.setCheckAA( false ); //AA判定関数checkAAを実行しない。
 //	ck.aa_type1 = bd.key.equals( "v2cj" ); //V2Cスクリプトのレスを自動AA判定する。
@@ -37,8 +41,9 @@ function beginCheck( th, cx ) {
 //	cx.setCheckNG( false ); //非表示判定関数checkNGを実行しない。
 //	ck.ng_res1 = true; //レス１を常に非表示にする。
 //	ck.ng_kote = bd.key.equals( "software" ) ? bd.anonymousName : null; //ソフ板でn|aさん以外のコテハンを非表示判定する。
-//	ck.ng_poverty_imgres = 1;  // 嫌儲の2から10レス(設定初期値240行目あたりで変更可)まで順繰り画像のみのレスか判定していって見つかった時点で非表示設定し処理を終了する(「=」の右側が1なら透明,2なら通常NG)
-	if (String(th.url).indexOf('2ch.net') >= 0) { ck.ng_beid2 = getBeIdObj(); } //  NGBEID2.0に対応したBe非表示機能。パーミッション「SF」 (※別途 registerNGBEID2.js、subject.js、threadld.jsが必要)
+//	ck.ng_poverty_imgres = 1;  // [1透明NG, 2通常NG] 嫌儲でスレ立て直後のスクリプトによる画像レスを非表示する(※別途vsutil.jsが必要。設定初期値240行目あたりで変更可)
+	ck.ng_beid2 = (th.bbs.is2ch) ? getBeIdObj() : null; //  NGBEID2.0に対応したBe非表示機能。パーミッション「SF」 (※別途 registerNGBEID2.js、subject.js、threadld.jsが必要)
+	
 	// ***** 前の行まで *****
 	for ( var i in ck ) {
 		return ck;
@@ -60,15 +65,17 @@ var pw = java.util.regex.Pattern.compile('((?:^|[^/])(?:www))(\\.)');
 function getBeIdObj()
 {
 	var l = null; w = 0;
-	try {
-		var js = v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/registerNGBEID2.js'));
-		if (js) {
-			l = eval(String(js));
-			if (l) {
-				w = l.getMaxWeight();
-			}
+	var js = v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/registerNGBEID2.js'));
+	if (js) {
+		l = eval(String(js));
+		if (l) {
+			w = l.getMaxWeight();
 		}
-	} catch(e) { }
+	}
+	if (!l) {
+		v2c.println('[rescheck.js:getBeIdObj()] registerNGBEID2.jsが読み込めませんでした。');
+		return null;
+	}
 	return { list: l, weight: w };
 }
 
@@ -125,10 +132,11 @@ function checkRawText( res, cx ) {
 			while (mt.find() && lpc < 10) {
 				if (mt.group(2) >= num) {
 					mt.appendReplacement(sb, '$1&lrm;$2');
+								v2c.println(msg);
 				}
 				lpc++;
 			}
-			msg = mt.appendTail(sb);
+			msg = mt.appendTail(sb) + '';
 		}
 	}
 	if( obj.nanashi ) {
@@ -170,7 +178,7 @@ function checkRawText( res, cx ) {
 	if ( obj.breakWWWLink ) {
 		var mt = pw.matcher(msg);
 		if (mt.find()) {
-			msg = mt.replaceAll('$1<!-- -->$2');
+			msg = mt.replaceAll('$1<!-- -->$2') + '';
 		}
 	}
 	if ( obj.ZentoHan ) {
@@ -200,6 +208,10 @@ function checkRawText( res, cx ) {
 			}
 			return a;
 		});
+	}
+	if (obj.sageteyon) {
+		var repstr = (obj.sageteyon == 2) ? ' 転載禁止&copy;2ch.net' : '';
+		name = name.replace(/ <small>[^<]+?<\/small>/i, repstr);
 	}
 	res.setName( name );
 	res.setMessage( msg );
@@ -277,7 +289,7 @@ function checkNG( res, cx ) {
 			}
 		}
 	}
-	if ((String(res.thread.url).indexOf('2ch.net') >= 0) && res.beID && obj.ng_beid2 && ((res.weight - obj.ng_beid2.weight) <= 0)) {
+	if (obj.ng_beid2 && res.beID && ((res.weight - obj.ng_beid2.weight) <= 0)) {
 
 		var list = obj.ng_beid2.list;
 		var beID, item;
@@ -298,4 +310,6 @@ function endCheck( th, cx ) {
 
 	// ***** 前の行まで *****
 }
+// ----------------------
+
 // ----- 前の行まで -----

@@ -1,7 +1,13 @@
 ﻿//【登録場所】 "V2C\script\system\threadld.js"
 //【内容】threadld.jsのまとめ
+//【パーミッション】SF
 //【備考】threadUpdatedとpanelCreatedの{}内で、行頭のコメント「//」を、利用する行ごとに解除することで、有効になります。
-//【更新日】2014/04/04 sofTalkの追加
+//【更新日】2014/10/23 removeSageteyonの追加
+//          2014/07/28 BGBEID2.0 : NGBEのスレを開いた時に自動で閉じる処理の追加 (自動スレ更新を消す設定項目の追加 607行目付近)
+//          2014/07/25 java6で動かない不具合の修正
+//          2014/06/13 NGBEID2.0 : BEの仕様変更に対応(bbspinkの追加) 7/3追記：バグ修正
+//          2014/06/07 NGBEID2.0に対応したBe非表示機能の追加(パーミッションを「SF」に変更して下さい。) 6/13追記:バグ修正
+//          2014/04/04 sofTalkの追加
 //          2014/03/31 getMachiKakologの追加
 //          2013/11/24 guroNGの追加
 //【スクリプト】
@@ -9,14 +15,17 @@
 /* スレッドの更新が完了した時に実行するスクリプト */
 function threadUpdated(th, cx) {
 /* 機能を有効にしたい場合、下の各行頭//を削除してください  */
-//  egnoreNewNGRes(th, cx); //新着がNGのみの場合、未読状態を解除
-//  redirectNewsThread(th, cx); //速報headlineスレを開くと本スレにリダイレクト ※パーミッションにSを追加してください ※速報headlineスレのログは削除されません。
-//  redirectLiveThread(th, cx); //テレビ番組欄のスレを開くと一番勢いのあるスレッド(恐らく本スレ)にリダイレクト ※パーミッションにSを追加してください ※テレビ番組欄スレのログは削除されません。
-//  idConditionalNG(th, cx); //閾値以上書き込みIDをNG判定(デフォルトはニュー速と嫌儲で有効)
-//  checkNewTanpatsuNG(th, cx); //新着レスを対象に単発IDのレスを非表示にする。（デフォルトは実況カテゴリで有効）
-//  guroNG(th, cx); //グロアンカーのついたレスが画像リンクを持っていた場合透明NGに指定
-//  getMachiKakolog(th, cx);  // まちBBSでdat落ちの場合mimizunから過去ログ取得試みます。※取得に成功すると自動でスレを閉じますが閲覧するにはその後手動でスレを開く必要があります。
-//  sofTalk(th, cx);			// SofTalkでスレッドを読み上げます。※下部の470行あたりfunction softTalk(th, cx) 以下の設定項目があります
+//	egnoreNewNGRes(th, cx);		// 新着がNGのみの場合、未読状態を解除
+//	redirectNewsThread(th, cx);	// 速報headlineスレを開くと本スレにリダイレクト ※パーミッションにSを追加してください ※速報headlineスレのログは削除されません。
+//	redirectLiveThread(th, cx);	// テレビ番組欄のスレを開くと一番勢いのあるスレッド(恐らく本スレ)にリダイレクト ※パーミッションにSを追加してください ※テレビ番組欄スレのログは削除されません。
+//	idConditionalNG(th, cx);		// 閾値以上書き込みIDをNG判定(デフォルトはニュー速と嫌儲で有効)
+//	checkNewTanpatsuNG(th, cx); // 新着レスを対象に単発IDのレスを非表示にする。（デフォルトは実況カテゴリで有効）
+//	guroNG(th, cx);				// グロアンカーのついたレスが画像リンクを持っていた場合透明NGに指定
+//	getMachiKakolog(th, cx);		// まちBBSでdat落ちの場合mimizunから過去ログ取得試みます。※取得に成功すると自動でスレを閉じますが閲覧するにはその後手動でスレを開く必要があります。
+//	sofTalk(th, cx);				// SofTalkでスレッドを読み上げます。※下部の470行あたりfunction softTalk(th, cx) 以下の設定項目があります
+	ngbeid2thentry(th, cx);			// NGBEID2.0に対応したBe非表示機能。(※パーミッション「SF」) (※別途 registerNGBEID2.js、rescheck.js、subject.jsが必要)
+//	ngbeid2reslabel(th, cx);		// NGBEID2.0Be非表示機能でレスラベルによるBeの強調表示機能。(※パーミッション「SF」) (※別途 registerNGBEID2.js、rescheck.js、subject.jsが必要)
+//	removeSageteyon(th, cx);		// getdat.js以外で取得したDATファイル(V2C標準機能)のスレタイの転載禁止文字列を削除します。(※更新の差分取得が出来なくなります)
 }
 
 /* レス表示タブを作成した時に実行するスクリプト */
@@ -85,7 +94,7 @@ function redirectLiveThread(th, cx) {
     'ｧ', 'ｱ', 'ｨ', 'ｲ', 'ｩ', 'ｳ', 'ｪ', 'ｴ', 'ｫ', 'ｵ', 'ｶ', 'ｷ', 'ｸ', 'ｹ', 'ｺ', 'ｻ', 'ｼ', 'ｽ', 'ｾ', 'ｿ', 'ﾀ', 'ﾁ', 'ｯ', 'ﾂ', 'ﾃ', 'ﾄ', 'ﾅ', 'ﾆ', 'ﾇ', 'ﾈ', 'ﾉ', 'ﾊ', 'ﾋ', 'ﾌ', 'ﾍ',
     'ﾎ', 'ﾏ', 'ﾐ', 'ﾑ', 'ﾒ', 'ﾓ', 'ｬ', 'ﾔ', 'ｭ', 'ﾕ', 'ｮ', 'ﾖ', 'ﾗ', 'ﾘ', 'ﾙ', 'ﾚ', 'ﾛ', 'ﾜ', 'ﾜ', 'ｦ', 'ﾝ', '｡', '｢', '｣', '､', '･', 'ｰ', 'ﾞ', 'ﾟ'];
     var zenKana = 'ガギグゲゴザジズゼゾダヂヅデドバパビピブプベペボポヴァアィイゥウェエォオカキクケコサシスセソタチッツテトナニヌネノハヒフヘホマミムメモャヤュユョヨラリルレロワワヲン。「」、・ー゛゜';
-    var zenHira = 'がぎぐげござじずぜぞだぢづでどばぱびぴぶぷべぺぼぽヴぁあぃいぅうぇえぉおかきくけこさしすせそたちっつてとなにぬねのはひふへほまみむめもゃやゅゆょよらりるれろわわをん。「」、・ー゛゜';
+    var zenHira = 'がぎぐげござじずぜぞだぢづでどばぱびぴぶぷべぺぼぽゔぁあぃいぅうぇえぉおかきくけこさしすせそたちっつてとなにぬねのはひふへほまみむめもゃやゅゆょよらりるれろわわをん。「」、・ー゛゜';
     //全角カタカナひらがなを半角カタカナに
     name = name.replace(/[ぁ-んァ-ヴ「」、・ー゛゜]/g, function(s) {
       var n = zenKana.indexOf(s);
@@ -423,13 +432,14 @@ function guroNG(th, cx)
 		var res = th.getRes(i);
 		var decision = false;
 		if (res && res.refResIndex && res.refResIndex.length > 0 && res.links.length > 0) {
-
 			for (var j = 0; j < res.refResIndex.length; j++) {
 				decision = (th.getRes(res.refResIndex[j]).message.indexOf('グロ') >= 0) ? true : decision;
 			}
 		}
-		if (decision) v2c.println('[threadld.js:guroNG()] レスNo.' + res.number + ' をグロと断定して透明NGしました。');
-		if (decision) res.setNGRes(true);
+		if (decision) {
+			v2c.println('[threadld.js:guroNG()] レスNo.' + res.number + ' をグロと断定して透明NGしました。');
+			res.setNGRes(true);
+		}
 	}
 }
 
@@ -538,3 +548,125 @@ function sofTalk(th, cx)
 		return (cnt)? true : false;
 	}
 }
+
+function getBeIdList()
+{
+	var l = null;
+	var js = v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/registerNGBEID2.js'));
+	if (js) {
+		l = eval(String(js));
+	}
+	return l;
+}
+
+function getBeIdThreadList()
+{
+	var l = null;
+	var js = v2c.readStringFromFile(new java.io.File(v2c.saveDir + '/script/registerNGBEID2.js'));
+	if (js) {
+		l = eval(String(js));
+		if (l) {
+			l = l.getNgThreadBeList();
+			if (l && l.length == 0)
+				l = null;
+		}
+	} else {
+		v2c.println('[subject.js:ngbeid2th()] registerNGBEID2.jsが開けませんでした。');
+	}
+	return l;
+}
+
+function ngbeid2reslabel(th, cx)
+{
+	if (!th.bbs.is2ch) { return; }
+	var resArr = [];
+	for (var i = 0; i < th.localResCount; i++) {
+		var res = th.getRes(i);
+		if (res.beID && (!res.resLabel)) {
+			resArr.push(res);
+		}
+	}
+	if (resArr.length > 0) {
+		var beIdList = getBeIdList();
+		if (!beIdList) {
+			v2c.println('[threadld.js:ngbeid2reslabel()] registerNGBEID2.jsが開けません。');
+			return;
+		}
+		for (var i = 0; i < resArr.length; i++) {
+			var beID = (/ BE:(\d+)/.test(resArr[i].source)) ? RegExp.$1 : null;
+			var item, rlobj;
+			if (beID && (item = beIdList.getItem(beID)) && item.hilight && (rlobj = v2c.getResLabel(item.hilight))) {
+				resArr[i].setResLabel(rlobj);
+			}
+		}
+	}
+}
+
+function ngbeid2thentry(th, cx)
+{
+	// ---------------------------------------
+	// [設定項目] (true:自動で速スレ更新して消す、false:次回手動スレ更新時に消す) NGスレ時にスレ一覧から該当スレを消す
+	var updateThread = true;
+	// ---------------------------------------
+	if (!th.bbs.is2ch) { return; }
+	var res = th.getRes(0);
+	if ((!res) || (!res.beID)) { return; }
+	var beID = (/ BE:(\d+)/.test(res.source)) ? RegExp.$1 : null;
+	if (!beID) { return; }
+	var f = new java.io.File(v2c.saveDir + '/script/scdata/ngbelist/' + th.board.key + '.txt');
+	var thlist = String(v2c.readStringFromFile(f, 'UTF-8') || '');
+	thlist = thlist.split(/\r\n|\r|\n/);
+	if (!thlist[thlist.length - 1]) {
+		thlist.pop();
+	}
+
+	var entry = th.board.key + '\t' + th.key + '\tID:' + res.id + '\t\t' + th.title + '\t' + beID;
+	var added = false;
+	for (var i = 0; i < thlist.length; i++) {
+		if (thlist[i] == entry) {
+			added = true;
+			break;
+		}
+	}
+	if (!added) {
+		thlist.push(entry);
+		v2c.writeLinesToFile(f, thlist, 'UTF-8');
+	}
+	
+	var ngl   = getBeIdThreadList() || [];	// スレ非表示が有効なNGBEリスト
+	
+	for (var i = 0; i < ngl.length; i++) {
+		if (arrayIndexOf(ngl, beID) >= 0) {
+			if (updateThread)
+				v2c.openURL(th.board.url);
+			th.close();
+		}
+	}
+}
+
+function arrayIndexOf(array, item)
+{
+	if (array) {
+		for (var i = 0; i < array.length; i++) {
+			if (array[i] == item) {
+				return i;
+			}
+		}
+	}
+	return -1;
+};
+
+function removeSageteyon(th, cx)
+{
+	var u = String(th.url);
+	if (u.indexOf('bbspink') != -1 || u.indexOf('2ch.net') != -1) {
+	
+		var dat = String(v2c.readStringFromFile(th.localFile)).split('\n');
+		var res1 = dat[0].split('<>');
+		var tidx = res1.length - 1;
+		res1[tidx] = res1[tidx].replace(/\[転載禁止\] (.+)&copy;2ch\.net\t(.*?)/, '$1$2');
+		dat[0] = res1.join('<>');
+		dat = dat.join('\n');
+		v2c.writeStringToFile(th.localFile, dat);
+	}
+};
