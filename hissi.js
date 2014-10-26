@@ -417,7 +417,7 @@ function createMainPopupString(su,sh){
 	if(!ttl) {v2c.alert('この(ID|トリップ)に対応するファイルが存在しません。'); returnInputKeyWord(); return;}
 	ID = ttl[1].match(/&gt; ([^; ]+$)/).pop();
 	IdList[IdPageIdx] = ID;
-	var dsp = DATE.split("/");
+	var dsp = new String(DATE).split("/");
 	var cld = new Date(dsp[0]-0,dsp[1]-1,dsp[2]-0).getTime()-0;
 	var cll = new Date(2008,7-1,9).getTime()-0;
 	var cl,cr;
@@ -615,9 +615,10 @@ function createInputKeyWord(ri) {
 		} else {
 			BOARD = DefaultBoard;
 		}
-		var drp = DATE.replace(/\//g,'');
+		var drp = new String(DATE).replace(/\//g,'');
 		for(var i = 0; i < alen; i++){
-			if(BOARD == bka[i].split(',')[1]) break;
+			var b = bka[i].split(',')[1] + '';
+			if(BOARD == b) break
 		}
 		var tea = i == alen;
 		if(tea) BOARD = DefaultBoard;
