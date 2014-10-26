@@ -1,0 +1,118 @@
+<html>
+<head>
+<style type="text/css">
+<!--
+body { 
+	background-color: #eeeeee;
+	margin: 0px;
+}
+a {
+	color: #3399cc;
+	text-decoration: underline;
+}
+td.title {
+	font-size: 12px;
+	font-weight: bold;
+	padding-left: 10px;
+	color: #ffffff;
+	background-color: #ff5555;
+}
+td.img {
+	margin-top: 4px;
+	margin-left: 10px;
+	padding: 0px;
+}
+td.label {
+	margin-top: 10px;
+	font-size: 11px;
+}
+td.param {
+	margin-top: 11px;
+	font-size: 11px;
+}
+td.ratingbar {
+	padding-left: 40px;
+}
+p.tag {
+	margin-top: 3px;
+	margin-bottom: 3px;
+	padding: 5px;
+	background-color: #ffffff;
+}
+p.rating {
+	margin-top: 5px;
+	margin-right: 15px;
+	color: #888888;
+}
+p.comment {
+	padding-left: 5px;
+}
+div.ratingbar {
+	background-color: #993333;
+	font-size: 1px;
+}
+div.like {
+	background-color: #338833;
+	font-size: 1px;
+}
+-->
+</style>
+</head>
+<body>
+<table border="0" width="500">
+
+<tr><td class="title" colspan="3">%title%</td></tr>
+
+<tr>
+
+<td class="img" rowspan="2">
+<a href="%movie%"><img height="135" width="180" src="%thumb%" /></a></td>
+
+<td class="label" align="right" nowrap>
+<b>再生時間<br>
+投稿者<br>
+投稿日時<br>
+再生数<br>
+お気に入り<br>
+</p></b></td>
+
+
+<td class="param" align="left" nowrap>
+%time%<br>
+<a href="%uri%">%name%</a><br>
+%ye%年%mo%月%da%日&nbsp;%ho%時%mi%分<br>
+%viewCount%&nbsp;回<br>
+%favCount%&nbsp;人<br>
+</td>
+
+<tr>
+<td class="ratingbar" colspan="2">
+<div class="ratingbar" width="150px" height="3px">
+<div class="like" width="%likeWidth%px" height="3px"></div>
+</div>
+<p class="rating" align="right">
+高評価&nbsp;%like%&nbsp;人、低評価&nbsp;%dislike%&nbsp;人
+</p>
+</td>
+</tr>
+
+<tr>
+<td colspan="3">
+<p class="tag"><b></b>%keywords%</p>
+<p class="comment" height="200">%comment%</p></td>
+</tr>
+
+<!-- ここからボタン -->
+<tr><td colspan="3"><table><tr>
+<td><form action=""><input type="submit" name="Fix" value="固定"></form></td>
+<td><form action=""><input type="submit" name="DL" value="DL"></form></td>
+<td><form action=""><input type="submit" name="Ext" value="外部ブラウザ"></form></td>
+<td><form action=""><input type="submit" name="CopyTytle+URL" value="タイトルとURLをコピー"></form></td>
+<td><form action=""><input type="submit" name="CopyInfo" value="動画情報をコピー"></form></td>
+</tr></table></td></tr>
+<!-- ここまでボタン -->
+
+</table>
+
+</body>
+</html>

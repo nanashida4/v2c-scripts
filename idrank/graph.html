@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css"><!--
+	body{
+		background-color:#F5F5F5;
+		margin:5px 0 5px 15px;
+		font-size:10px;
+		}
+	.form{/*コピー，再表示フォーム*/
+	}
+	.title{/*タイトル(集計期間)*/
+		margin:0 15px 0 0;
+		font-weight:bold;
+		text-align:center;
+		font-size:9px;
+	}
+	.headding{/*ヘッダー*/
+		background-color:#808080;
+		color:white;
+		font-weight:bold;
+	}
+	.odd{/*奇数行*/
+		background-color:#DCDCDC;
+	}
+	.even{/*偶数行*/
+		background-color:#F5F5F5;
+	}
+	.data{/**/
+		color:#404040;
+		font-weight:bold;
+	}
+	.rank{/*順位*/
+	}
+	.id{/*ID*/
+	}
+	.res{/*レス数*/
+	}
+	.ref{/*被参照数*/
+	}
+	.char{/*文字数*/
+	}
+	.mchar{/*平均文字数*/
+	}
+	.link{/*リンク数*/
+	}
+	.ng{/*NGレス数*/
+	}
+	.th{/*書込スレ数*/
+	}
+	.check{/*チェックボックス*/
+	
+	}
+	.bar{/*グラフバー*/
+		background-color:#696969;
+		margin:1px 0 0 0;
+	}
+	.sum{/*合計*/
+		background-color:#808080;
+		color:white;
+		font-weight:bold;
+	}
+	.table{/*ランキング表全体*/
+		text-align:center;
+	}
+--></style>
+</head>
+<body>
+<form action="" align="center">
+	<table border="0" cellspacing="1" cellpadding="1" class="form">
+	<tr>
+		<td><select name="ct">
+				<option value="0" $SortColumn0$ >レス数
+				<option value="1" $SortColumn1$ >被参照数
+				<option value="2" $SortColumn2$ >文字数
+				<option value="3" $SortColumn3$ >平均文字数
+				<option value="4" $SortColumn4$ >リンク数
+				<option value="5" $SortColumn5$ >ＮＧレス数
+				<option value="6" $SortColumn6$ >書込スレ数
+			</select>
+		</td>
+		<td>が</td>
+		<td><input type="text" size="5" maxlength="4" name="hd" value="$Threshold$"></td>
+		<td>位以内のＩＤ</td>
+		<td><input type="submit" name="redisp" value="再表示"></td>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="コピー" name="copy"></td><!-- コピーボタン -->
+		<td><input type="submit" value="↑" name="docking"></td>
+	</tr>
+	</table>
+</form>
+<table border="0" cellspacing="1" cellpadding="1" class="table">
+<tr class="title">
+	<td align="center" colspan="10"><B>IDランキング　</B>$StartTime$ ～ $StopTime$</td>
+</tr>
+<tr class="headding">
+	<th class="rank" align="center">Rank</th>
+	<th class="id" align="center">ID</th>
+	<th class="res" align="center" colspan="2">Res</th>
+	<th class="ref" align="center" colspan="2">Ref</th>
+	<th class="char" align="center">Char</th>
+	<th class="mchar" align="center">Char/Res</th>
+	<th class="link" align="center">Link</th>
+	<th class="ng" align="center">NG</th>
+	<th class="th" align="center">Th</th>
+</tr>
+<tr class="odd">
+	<td class="rank" align="right">$RankNum$&nbsp;</td>
+	<td class="id" align="left">&nbsp;&nbsp;$ID$&nbsp;</td>
+	<td class="res" align="right">$ResCount$&nbsp;</td>
+	<td class="res" align="left">$ResCountBar$</td>
+	<td class="ref" align="right">$RefCount$&nbsp;</td>
+	<td class="ref" align="left">$RefCountBar$</td>
+	<td class="char" align="center">$CharCount$</td>
+	<td class="mchar" align="center">$MeanCharCount$</td>
+	<td class="link" align="center">$LinkCount$</td>
+	<td class="ng" align="center">$NG_Count$</td>
+	<td class="th" align="center">$Th_Count$</td>
+</tr>
+<tr class="even">
+	<td class="rank" align="right">$RankNum$&nbsp;</td>
+	<td class="id" align="left">&nbsp;&nbsp;$ID$&nbsp;</td>
+	<td class="res" align="right">$ResCount$&nbsp;</td>
+	<td class="res" align="left">$ResCountBar$</td>
+	<td class="ref" align="right">$RefCount$&nbsp;</td>
+	<td class="ref" align="left">$RefCountBar$</td>
+	<td class="char" align="center">$CharCount$</td>
+	<td class="mchar" align="center">$MeanCharCount$</td>
+	<td class="link" align="center">$LinkCount$</td>
+	<td class="ng" align="center">$NG_Count$</td>
+	<td class="th" align="center">$Th_Count$</td>
+</tr>
+<tr class="sum" align="left">
+	<td>Total:&nbsp;</td>
+	<td colspan="10">$AllResNum$ レス/$ID_Num$ 人 ( $MeanResNum$ レス/1 人 )&nbsp;</td>
+</tr>
+</table>
+</body>
+</html>

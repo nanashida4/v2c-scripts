@@ -1,0 +1,36 @@
+﻿<html>
+<head>
+<style type="text/css">
+<!--
+body { background-color: #ffffff; margin: 3px; }
+a{ color: #3399cc; text-decoration: underline; }
+-->
+</style>
+</head>
+<body>
+
+<font size="+1">%text%</font><br>
+
+<font color="#666666">
+<a href="http://twitter.com/%aname%/status/%sid%">%date%</a>&nbsp;%via%から<br>
+%retweet%人がリツイート<br>
+</font>
+
+<hr>
+
+<table>
+<tr>
+
+<td>
+<a href="%icolink%"><img alt="" border="0" height="40" src="%icon%" width="40" /></a>
+</td>
+
+<td><font size="+1">
+<a href="%icolink%">%aname%</a></font><br>
+%uname%
+</td>
+
+</table>
+
+</body>
+</html>

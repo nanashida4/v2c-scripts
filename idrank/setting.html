@@ -1,0 +1,112 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css"><!--
+	body{background-color:#F5F5F5; margin:5px 0 5px 15px;}
+--></style>
+</head>
+<body>
+<form action="">
+	<table border="0" cellspacing="1" cellpadding="1" style="font-size:10px;">
+		<tr>
+			<td colspan="14"><div><B>IDランキングの設定　</B>( $OldDate$  ～ $NewDate$ )</div></td>
+		</tr>
+		<tr>
+			<td>対象：</td>
+			<td colspan="13">
+				<input type="radio" name="st" value=0 $TargetRes0$ >すべてのタブ
+				<input type="radio" name="st" value=1 $TargetRes1$ >このタブ
+			</td>
+		</tr>
+		<tr>
+			<td>範囲：</td>
+			<td colspan="13">
+				<input type="radio" name="rd" value=0 $TypeRange0$ >すべてのレス
+				<input type="radio" name="rd" value=1 $TypeRange1$ >開始から終了までのレス
+			</td>
+		</tr>
+		<tr>
+			<td>開始：</td>
+			<td><input type="text" size="5" maxlength="4" name="sy" value="$StartArr0$"></td>
+			<td>/ </td>
+			<td><input type="text" size="3" maxlength="2" name="sm" value="$StartArr1$"></td>
+			<td>/ </td>
+			<td><input type="text" size="3" maxlength="2" name="sd" value="$StartArr2$"></td>
+			<td>&nbsp;</td>
+			<td><input type="text" size="3" maxlength="2" name="sh" value="$StartArr3$"></td>
+			<td>：</td>
+			<td><input type="text" size="3" maxlength="2" name="si" value="$StartArr4$"></td>
+			<td>：</td>
+			<td><input type="text" size="3" maxlength="2" name="ss" value="$StartArr5$"></td>
+			<td>.</td>
+			<td><input type="text" size="4" maxlength="3" name="sl" value="$StartArr6$"></td>
+		</tr>
+		<tr>
+			<td>終了：</td>
+			<td><input type="text" size="5" maxlength="4" name="ey" value="$StopArr0$"></td>
+			<td>/ </td>
+			<td><input type="text" size="3" maxlength="2" name="em" value="$StopArr1$"></td>
+			<td>/ </td>
+			<td><input type="text" size="3" maxlength="2" name="ed" value="$StopArr2$"></td>
+			<td>&nbsp;</td>
+			<td><input type="text" size="3" maxlength="2" name="eh" value="$StopArr3$"></td>
+			<td>：</td>
+			<td><input type="text" size="3" maxlength="2" name="ei" value="$StopArr4$"></td>
+			<td>：</td>
+			<td><input type="text" size="3" maxlength="2" name="es" value="$StopArr5$"></td>
+			<td>.</td>
+			<td><input type="text" size="4" maxlength="3" name="el" value="$StopArr6$"></td>
+		</tr>
+		<tr>
+			<td>閾値：</td>
+			<td colspan="4">
+				<div>
+					<select name="ct">
+						<option value="0" $SortColumn0$ >レス数
+						<option value="1" $SortColumn1$ >被参照数
+						<option value="2" $SortColumn2$ >文字数
+						<option value="3" $SortColumn3$ >平均文字数
+						<option value="4" $SortColumn4$ >リンク数
+						<option value="5" $SortColumn5$ >ＮＧレス数
+						<option value="6" $SortColumn6$ >書込スレ数
+					</select>
+				</div>
+			</td>
+			<td>が</td>
+			<td colspan="2"><input type="text" size="5" maxlength="4" name="hd" value="$Threshold$"></td>
+			<td colspan="6">位以内のＩＤ</td>
+		</tr>
+		<tr>
+			<td>表示：</td>
+			<td colspan="13">
+				<div>
+					<input type=checkbox name="rv" value=0 $ViewColumn0$ >レス数
+					<input type=checkbox name="fv" value=1 $ViewColumn1$ >被参照数
+					<input type=checkbox name="cv" value=2 $ViewColumn2$ >文字数
+					<input type=checkbox name="mv" value=3 $ViewColumn3$ >平均文字数
+					<input type=checkbox name="lv" value=4 $ViewColumn4$ >リンク数<br>
+					<input type=checkbox name="gv" value=5 $ViewColumn5$ >ＮＧレス数
+					<input type=checkbox name="tv" value=6 $ViewColumn6$ >書込スレ数
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>保存：</td>
+			<td colspan="13">
+				<div>
+					<input type=checkbox name="to" value=0 $TempSettings0$ >対象
+					<input type=checkbox name="do" value=1 $TempSettings1$ >範囲
+					<input type=checkbox name="so" value=2 $TempSettings2$ >開始
+					<input type=checkbox name="eo" value=3 $TempSettings3$ >終了
+					<input type=checkbox name="to" value=4 $TempSettings4$ >閾値
+					<input type=checkbox name="vo" value=5 $TempSettings5$ >表示
+				</div>
+			</td>
+		</tr>
+	</table>
+	<input type="submit" name="sb" value="実行">
+	<input type="reset" value="リセット">
+	<input type="submit" name="tt" value="保存して閉じる">
+</form>
+</body>
+</html>

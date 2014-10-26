@@ -1,0 +1,20 @@
+﻿%vid%		：動画ID
+%movie%	：動画URL
+%thumb%	：サムネイルURL
+%title%		：動画タイトル
+	%ye%	：西暦
+	%mo%	：月
+	%da%	：日
+	%ho%	：時
+	%mi%	：分
+	%se%	：秒
+%comment%	：投稿者コメント
+%name%		：投稿者名
+%uri%		：投稿者URI
+%keywords%	：キーワード(タグ)
+%time%		：再生時間
+%viewCount%	：再生回数
+%favCount%	：お気に入り数
+%like%'		：高評価
+%dislike%'	：低評価
+%likeWidth%'	：高評価バーの長さ
